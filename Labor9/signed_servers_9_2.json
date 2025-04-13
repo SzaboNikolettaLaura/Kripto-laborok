@@ -1,0 +1,102 @@
+[
+    {
+        "name": "szerver_Borika",
+        "publicKey": "3558de4a5f0f9389f71f96c3e57042a10d72ec104ac8fa41ceb1a04ccb626b94",
+        "signature": "1eade65b34e62a9102d0e1390deaec6bfe18f3ade9e3924ab5f3646fd3c2b659404a9e793b6594bb09ce0076c0440d9a8d2ddd3955453e9c1d7ac68ed0d6d80e"
+    },
+    {
+        "name": "szerver_Marika",
+        "publicKey": "89c1b03b81b91c0fc096eea1f8383efd7263dbe27ebe7aeb6c5975a5c05ad9a2",
+        "signature": "b55dc6063bbc9bdae7cc0793e103e043a0b490d4e8a9b8c60d9d5bd4a0cc2e9a52cc1c94902621afecfd0098797219b6df4128b5d5279b05a088c8f675dccc0f"
+    },
+    {
+        "name": "szerver_Zsuzsa",
+        "publicKey": "5f3473241a3704c0e81cd9dfc11acd84912f908f526338165e9ce90d9e5faa10",
+        "signature": "bb625ee69701907a5cc054dff537bf8d5cc2e7688d1848f81872121cecc8170ea60160dedfbfbc79092f804aa0417f1362000323c875862357c19f755479000f"
+    },
+    {
+        "name": "szerver_Palko",
+        "publicKey": "f5d51692cb9bc26a960969fbc380714e24cd803de3339d4e21d11719d4bc8f22",
+        "signature": "79127025ea0053da62de7bce0eb9b114dc844246d51f6aecec69b4062b079af665e20858882da9f3cff7b80868d3582ee2e86ab089c24e10a8f9e77aa589cb07"
+    },
+    {
+        "name": "szerver_Tunde",
+        "publicKey": "5214a2efc956878e803dcb374216bee558e36361909262b05e5d74b153998cf1",
+        "signature": "33bc040d32cf0b3d0e53391a4ccb91b26c11a532c28b6f398ed026731669c27a261b4fe3ea2af8903a7690a3a93fad81e4395e5fc5c3eb98b255a8aba92bb70a"
+    },
+    {
+        "name": "szerver_Szabi",
+        "publicKey": "b07748d4f9e3294ce77ba4882315f8edc374fc6d764c065b7e7fae0927be885b",
+        "signature": "d409ca868089a0f9ca93a3fd4fcaf67d706e7380c9d1a4ac872de2b3100a8f6929132bf00d57e97cbbbe2ced6ef4b3509d72193f3626043145c4904e62820f00"
+    },
+    {
+        "name": "szerver_Timea",
+        "publicKey": "8c6c84b36ba98c775974e8b6b805f514be72602774d66f30ad423a31f4825138",
+        "signature": "169d521138fe983dcd93f88dcf3b1dbacd37008dc9505664b18b24e3e605b4cde49410e08bedc7d1fd09ed6eebaf816b130077beb6b0912a3a5fe7ba429fcd01"
+    },
+    {
+        "name": "szerver_Isti",
+        "publicKey": "c33a20d70112b2056d06757600fff7e4b2070a54956c6e43b12ac3b0fb67c994",
+        "signature": "ff137557fbacbd8687a98867e819d38ed9fe5f230ac8d569f77b9d9a629811d0c1abd45def379b756a35ea38facdd1f0550f77c7557491fc68e2722be1de8302"
+    },
+    {
+        "name": "szerver_Zsolti",
+        "publicKey": "fadc2b3a0ced2fe216db84c1ac089cca191ef145c4b962488e5aa04d76e24042",
+        "signature": "5fc360d58422ad28f6d79d1f452d7fcaf9e62ebda35294e908bf09e3f5e55c24d1e9dc7f1a4607f857b4e0b6ecb7869a86cab3154fa73423d0ac5797564b9000"
+    },
+    {
+        "name": "szerver_Feri",
+        "publicKey": "4ecd30468b3ee120a47301b021fadfd13f27e71139295cf46bb0767cf74cede9",
+        "signature": "24230529de84e5923277edf9292c6ec7cb4e0cac2ff62e3d771eae0f94221ebfcf6ec2170bef305794459d1dedf747312b0d52ac744fa0b30ab987dfb1e7b30b"
+    },
+    {
+        "name": "szerver_Mari",
+        "publicKey": "568869c4fec57d87f9503ba5c6cceb3416d8826c46e0bd616e2cb584f90d7b14",
+        "signature": "07da1d188bcf215d900ce2347f37ac1e069dbe2f138c75dbf8d3a82a67982868f887af1e5f4c89624d9ae6ffd6efd8c18b6b85f8317f05306081f98486109f01"
+    },
+    {
+        "name": "szerver_Kati",
+        "publicKey": "39ed06d9cf73336eaaabfc25c9b1c70507607897db6762f90b26732db8728e7a",
+        "signature": "8fe6f79db1d59906b0bbda39799fe73f72563ed980d4c25937eb2ca5dde5236a3cb1f1295730101dfe59ff29a52b70b53886a9df93fc44dd60f5e30adefaa204"
+    },
+    {
+        "name": "szerver_Zsuzsa",
+        "publicKey": "2f7d41cc78e1ebb17bdad947352c32393b708d1577c762641b741cd5c9c2bf50",
+        "signature": "d6f4dc282ce37be06131ee24d8a61cbf882ee0eecb239461e0af28a153d1039f8e11a482869cc7ef50d76fd7a617a10a7f3b115200a0952847199ae664db8709"
+    },
+    {
+        "name": "szerver_Andi",
+        "publicKey": "305a03d03cd28c35af59bbd0d60de8a8711e5a4fec15bb463812b7511c476a22",
+        "signature": "42e657fb461c44818be4d6ade31c333579de75fb29ccebf1bc58f5f0c88ee0619399008c20c22ba83551aaccd24f8ebe4e89d65084807805bb19c2cb06699d06"
+    },
+    {
+        "name": "szerver_Arpi",
+        "publicKey": "328973c4600217169e6b669628a4d1f1c1654ce4132320f3e7866b959d9b35ec",
+        "signature": "0dbc305a77c15657a10132dfaf977fd1a92de8a703a8505ce48d1c493843de2f0b3984bef17350f341ec3eb1fa012007f1aaeab11779ab4e1a285f0a249ebf06"
+    },
+    {
+        "name": "szerver_Zoli",
+        "publicKey": "53fc5afd1c129123dd24b574c078961a1e9755dcaa23b940184c2f82fb960d67",
+        "signature": "e19aa3f820396683c7de488ddbcce8289bd5ec5f28c19229ab53263a240ab224d5957c3a1499a4fd86f88dd2f10a97ca311f5b8d5d04613c96ce8f7645fa5204"
+    },
+    {
+        "name": "szerver_Peti",
+        "publicKey": "29a5dc60e3ab2d250dad697b793e165fe5d85f301f6d4c0e1ada11ff2be444b9",
+        "signature": "e82fbb9c9f40eccc89af2235b40e01284e88e05b036b72adb07c9b3674e01413ec50870cb9f17b187490a64a90925ed5fa940b83db298670a9c78e3b461d2602"
+    },
+    {
+        "name": "szerver_Pali",
+        "publicKey": "ff12e1c27c1974e8c360db1021df675dff46c25cc3cf678c3cce320ad3f897d9",
+        "signature": "f7763a1be9dcc650f58825d25009b6a96ed023252003ab751e23d223c83447e5587ef185ac25f71db639c50704d051479559d1b0e0913add626b942377864009"
+    },
+    {
+        "name": "szerver_Teri",
+        "publicKey": "07f9167837a908fad2d4bbcba837459e6699fcfb546e9a478efb85b28c4257fd",
+        "signature": "4473029115703e34fe54ec950551c9ad8ef545f60e6ac8ee41a1430e97a8b38544296d0b0dd6ca4c9eb1e4b04c456c6c96b34d7bf5427e514b4dc2481c5c0803"
+    },
+    {
+        "name": "szerver_Ati",
+        "publicKey": "f88c88346262534f97fae5ad1823d042668bd9f8549de489c66bb062c4e05a20",
+        "signature": "a4d2cc58c2ff02f60897fadaac1f2b824a06c6a244e879ba3f03b12035c3efc7101ebc1ffd4d0c30405a052a7e28d7050daf9db3cb629394ac9a4055c311e504"
+    }
+]

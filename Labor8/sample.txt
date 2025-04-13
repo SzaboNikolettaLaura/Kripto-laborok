@@ -1,0 +1,5 @@
+This is a sample file for testing Diffie-Hellman key exchange and AES encryption/decryption.
+The Diffie-Hellman key exchange protocol allows two parties to establish a shared secret over an insecure communication channel.
+This shared secret can then be used as an encryption key for symmetric encryption algorithms like AES.
+In this implementation, we're using a large prime number and a generator from the generatorsDH.txt file to perform the key exchange.
+The resulting shared secret is used as the key for AES encryption and decryption of this file. 

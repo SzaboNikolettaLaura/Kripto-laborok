@@ -1,0 +1,5 @@
+This is a sample text file for testing the Hill cipher encryption and decryption.
+The Hill cipher is a polygraphic substitution cipher based on linear algebra.
+Each letter is represented by a number modulo 26 (often A = 0, B = 1, ..., Z = 25).
+To encrypt a message, each block of n letters is multiplied by an invertible n × n matrix, modulo 26.
+To decrypt the message, each block is multiplied by the inverse of the matrix used for encryption. 
