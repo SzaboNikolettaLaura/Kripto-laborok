@@ -1,3 +1,4 @@
+#6. Egy gif állomány CBC blokk-titkosító módszert alkalmazva, Hill, mod 256 titkosítóval volt titkosítva, két betünkét. Határozzuk meg az eredeti gif állományt a titkosított állomány alapján, tudva, hogy az IV értéke (129, 131), a titkosító kulcs pedig (27, 131, 22, 101).
 import numpy as np
 from PIL import Image
 import io

@@ -1,3 +1,4 @@
+#4. Generáljunk véletlenszerűen egy 2048 bites RSA kulcspárt, a kulcsokat mentsük ki egy-egy állományba, majd ezeket a kulcsot felhasználva határozzuk meg egy tetszőleges bináris állomány digitális aláírását valamely RSA aláírási sémát alkalmazva, illetve ellenőrizzük le a létrehozott aláírást.
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes, serialization
 import os

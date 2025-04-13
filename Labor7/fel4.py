@@ -1,3 +1,4 @@
+#4. Az RSA kriptorendszer visszafejtésének időigényét gyorsítani lehet, ha alkalmazzuk a kínai maradéktételt. Alkalmazzuk ezt a gyorsítási folyamatot az RSA-textbook esetében. Írjunk programot, melyben összehasonlítjuk a két visszafejtési algoritmus időigényét.
 import random
 import time
 from math import gcd

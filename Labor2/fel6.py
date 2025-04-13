@@ -1,3 +1,4 @@
+#6. A jpg kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg az eredeti képet tudva, hogy a rejtjelezéshez használt kulcs (a, b) = (113, 223).
 import os
 import sys
 

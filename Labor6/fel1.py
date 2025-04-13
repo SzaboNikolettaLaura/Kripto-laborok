@@ -1,3 +1,4 @@
+#1. A PasswdSHA256.txt állományban személyek nevei és jelszavaiknak hash értéke található. A hash értékek az SHA3-256-os hash függvényt alkalmazva voltak létrehozva. Határozzuk meg melyek azok a személyek, amelyeknek ugyanaz a jelszava.
 import json
 
 # Read the password file

@@ -1,3 +1,4 @@
+#1. Válasszunk két, legalább 1024 bites prímszámot, majd RSA-kulcsként alkalmazva őket titkosítsunk és fejtsünk vissza egy tetszőleges ASCII karaktereket tartalmazó szöveget. A szöveget generáljuk véletlenszerűen, hossza pedig akkor legyen, hogy a szövegnek megfelelő szám kisebb legyen, mint az RSA-modulus. Ugyanazt a szöveget titkosítsuk többször RSA-val, majd RSA-OAEP-vel. A titkosított bájtszekvenciákat hexa formában írjuk ki a képernyőre. A titkosított bájtszekvenciákat megfigyelve mit lehet megállapítani?
 import random
 import string
 import math

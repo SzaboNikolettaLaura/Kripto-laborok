@@ -1,3 +1,4 @@
+#4. A állomány Caesar módszerrel volt rejtjelezve, ahol a titkosítást bájtok felett végeztük. Határozzuk meg az eredeti txt típusű állományt és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével. Az összes lehetséges kimeneti állomány között csak a felel meg az eredeti txt-nek, amelyik csak nyomtatható ASCII karaktereket és a 10 és 13-as ASCII kodú karaktereket tartalmazza.
 import sys
 
 def is_valid_text(text):

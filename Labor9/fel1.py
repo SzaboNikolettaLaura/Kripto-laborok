@@ -1,3 +1,8 @@
+#1. A signatures9_1.json állományban személyek nevei és a publikus kulcsaik digitális aláírása található hexa formában. A digitális aláírások
+# az Edwards-curve Digital Signature Algorithm (EdDSA) rfc8032 szabvány alapján kerültek meghatározásra,
+# egy központi hatóság privát kulcsát alkalmazva lettek létre hozva, amelynek publikus kulcsa az publicKeyECC_CA_9_1.pem állományban található,
+# nem közvetlenül a tartalomra, hanem a hash értekre voltak kiszámolva, ahol az alkalmazott hash az SHA512 volt és csak a nyers (raw) tartalom került aláírásra.
+# Írjunk egy programot, amely elsőlépésben hitelesíti a publicKeyECC_B_9_1.pem állományban található publikus kulcsot, azaz ellenőrzi, hogy szerepel-e a digitális aláírása a signatures9_1.json állományban, és meghatározza, hogy kié. Második lépésben pedig alkalmazva a privateKeyECC_A_9_1.pem állományban levő privát kulcsot egy DH-ECC kulcs megosztási eljárást alkalmazva létrehoz egy 32 bájtos titkos kulcsként alkalmazható bájtszekvenciát. A jelszó: pasword_A_9_1
 import json
 import hashlib
 from cryptography.hazmat.primitives import hashes, serialization

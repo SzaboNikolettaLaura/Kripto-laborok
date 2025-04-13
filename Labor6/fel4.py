@@ -1,3 +1,4 @@
+#4. Az előző feladatnál, akiknek sikerült a jelszavát feltörni, azok esetében végezzük el a következőket: mentsük ki egy json állományba a személyek nevét, a jelszavak hashértékét, és a salt-ot, de most az iterációszámot állítsuk legalább 1000000-re. Sikerül-e ebben az esetben is feltörni a jelszavakat?
 import json
 import hashlib
 import base64

@@ -1,3 +1,4 @@
+#5. Ugyanaz a szöveg RSA-textbook módszerrel, kétszer volt rejtjelezve. Határozzuk meg az eredeti szöveget, ha tudjuk, hogy a titkosítást különböző exponensekkel legyenek ezek e és f, de ugyanazzal a modulussal, legyen ez n végezték, ahol (e, f) = 1. A két rejtjelezett szövegnek megfelelő bináris állomány az RSAcr1 és az RSAcr2, a két kulcs, ahol az első érték mindkét esetben a modulus, pedig key_e.txt és key_f.txt állományokban található.
 from sympy.polys.polytools import gcdex
 import binascii
 import math

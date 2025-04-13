@@ -1,3 +1,4 @@
+#3. Titkosítsunk és fejtsünk vissza egy tetszőleges bináris állományt, TEA-CBC, vagy TEA-CTR módban, ahol az alkalmazott kulcsot véletlenszerűen generáljuk.
 import os
 import struct
 import random

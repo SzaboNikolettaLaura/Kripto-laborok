@@ -1,3 +1,4 @@
+#7. A bmp kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg rejtjelezéshez használt kulcsot, illetve az eredeti képet tudva, hogy 0xFF rejtjele 0x30, illetve 0x00 rejtjele 0x77 (ismert nyílt szövegű támadás / known plaintext attack).
 import os
 import sys
 

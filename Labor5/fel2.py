@@ -1,3 +1,4 @@
+#2. Titkosítsunk és fejtsünk vissza egy tetszőleges bináris állományt, rendre DES3-CBC, DES3-CTR, AES-CBC, AES-CTR módban, használva az általunk kiválasztott programozási nyelvhez megírt crypto könyvtárcsomagot. Forráskódok: bináris állomány titkosítása, visszafejtése a Blowfish-CBC algoritmussal Python, OpenSSL, Crypto++, Java.
 from Crypto.Cipher import DES3, AES
 from Crypto.Random import get_random_bytes
 import os

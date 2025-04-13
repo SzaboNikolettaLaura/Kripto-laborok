@@ -1,3 +1,4 @@
+#3. Határozzuk meg azt a nyílt szöveget, amelyről tudjuk, hogy három különböző félnek RSA-textbookkal rejtjelezve volt elküldve, ahol a következő linken elérhetőek a felek nyilvános kulcsai, illetve a rejtjelezett szövegek:
 import math
 import decimal
 from functools import reduce

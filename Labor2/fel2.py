@@ -1,3 +1,4 @@
+#2. Írjunk programot, mely affin módszerrel titkosít és visszafejt egy tetszőleges szövegállományt. A szövegállományon végezzünk elő-feldolgozást, oly módon hogy minden betűt alakítsunk nagybetűvé, és csak az angol ábécé betűit tartsuk meg, a többi karaktert vágjuk ki, majd az így kapott szöveg angol ábécé nagybetűinek feleltessük meg a megfelelő számkódokat (számkód tábla). A titkosítást a számkódokon végezzük.
 def extended_gcd(a, b):
     if a == 0:
         return b, 0, 1

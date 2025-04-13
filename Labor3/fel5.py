@@ -1,3 +1,4 @@
+#5. Írjunk programot, amely titkosít és visszafejt egy tetszőleges bináris állományt, ahol blokkonként a Hill-256 titkosítót alkalmazzuk, ahol tetszőlegesen lehessen blokkméretet változtatni, és oldjuk meg az utolsó blokk paddingolását, a PKCS#7 padding módot alkalmazva.
 import numpy as np
 from numpy.linalg import inv, det
 

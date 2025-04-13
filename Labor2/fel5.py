@@ -1,3 +1,4 @@
+#5. Egy jpg kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg az eredeti képet és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével, tudva azt, hogy egy jpg első két bájtja 0xFF, 0xD8.
 import os
 import sys
 from math import gcd

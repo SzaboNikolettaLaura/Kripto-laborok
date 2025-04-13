@@ -1,3 +1,4 @@
+#3. A következő titkosított szöveg az outHill.txt állományban van, Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást az angol ábécé 26 kis betűje plusz a szóköz felett végezték (mod 27-el kell számolni!!). Tudva azt, hogy az "pu"-nak "oa" és "or"-nek "we" a rejtjele határozzuk meg az eredeti szöveget.
 import re
 
 def char_to_num(c):

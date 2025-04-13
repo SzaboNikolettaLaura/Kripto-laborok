@@ -1,3 +1,4 @@
+#1. Ha tudjuk, hogy a Diffie-Hellman kulcscseréhez szükséges prímszám a generatorsDH.txt állomány első értéke és ha a generátor elem a további értékek közül valamelyik, szimuláljuk a Diffie-Hellman kulcscsét, majd a meghatározott értéket az AES titkosító kulcsaként alkalmazva, titkosítsunk és fejtsünk vissza egy nagyobb méretű állományt
 import random
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad

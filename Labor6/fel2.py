@@ -1,3 +1,4 @@
+#2. A PasswdSHA256.json állományban személyek nevei és jelszavaiknak hash értéke található. A hash értékek az SHA3-256-os hash függvényt alkalmazva voltak létrehozva. Tudva, hogy néhány személy jelszava a leggyakrabban használt jelszavak közül került ki, határozzuk meg ezeket a személyeket, illetve a jelszavaikat. A leggyakrabban használt jelszavakat a 10-million-password-list-top-10000.txt állományban találjuk.
 import json
 import hashlib
 import base64

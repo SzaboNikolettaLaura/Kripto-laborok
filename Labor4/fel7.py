@@ -9,10 +9,10 @@ def verify_authenticity():
         if i + 3 >= len(lines):
             break
             
-        key = b64decode(lines[i].strip())
-        nonce = b64decode(lines[i+1].strip())
-        ciphertext = b64decode(lines[i+2].strip())
-        tag = b64decode(lines[i+3].strip())
+        key = bytearray.fromhex(lines[i].strip())
+        nonce = bytearray.fromhex(lines[i+1].strip())
+        ciphertext = bytearray.fromhex(lines[i+2].strip())
+        tag = bytearray.fromhex(lines[i+3].strip())
         
         try:
             cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce)

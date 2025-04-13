@@ -1,3 +1,9 @@
+#2. A crypted8_2.jpg AES-CTR módszerrel volt rejtjelezve, ahol az alkalmazott nonce a titkosított file első 8 bájtja és a counter értéke 1-től indul. Határozzuk meg az eredeti jpg filet, ha az AES 32 bájtos kulcs titkosított értékét a Diffie-Hellman kulcserét alkalmazva lehet meghatározni a következőképpen:
+
+# olvassuk ki a publikus paramétereket a DHKey8_2.txt állományból, azaz rendre a p, q, r egész számok hexa értékét,
+# olvassuk ki a privát kulcs hexa értékét az APrivFile.txt állományból,
+# olvassuk ki a publikus kulcs hexa értékét az BPubFile.txt állományból,
+# a közös K kulcsból hozzuk létre a 32 bájtos AES kulcsot, alkalmazva az scrypt kulcs deriváló függvényt, ahol a salt hexa értéke: 438bcc1fd2bb1363e90fb6ff4756bc58, a CPU/Memory költség értéke: 2 ** 10, a blokk méret: 8, a párhuzamossági paraméter: 1.
 import os
 import binascii
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes

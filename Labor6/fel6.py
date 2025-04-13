@@ -1,3 +1,4 @@
+#6. Titkosítsunk és fejtsünk vissza egy bináris állományt, AES-GCM titkosítást alkalmazva, ahol a nonce és kulcs értékeket generáljuk véletlenszerűen. A titkosítás során az állomány elejére írjuk be a nonce értékét, majd a végére a hitelesítő tag-et. Visszafejtéskor elenőrzizzük le azt is, hogy nem-e módosult az állomány tartalma. A generált kulcsot írjuk ki egy szövegállományba base64-es alakba. Hogyan járunk el ha az állományt csak részenként tudjk beolvasni, ha a teljes tartalom nem fér el a memóriában?
 import os
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM

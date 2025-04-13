@@ -1,3 +1,4 @@
+#7. Hasonlítsuk össze a Salsa20 és AES-256 titkosítók időigényét.
 import time
 import os
 from Crypto.Cipher import Salsa20, AES

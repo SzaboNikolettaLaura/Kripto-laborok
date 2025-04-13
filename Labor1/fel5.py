@@ -1,3 +1,4 @@
+#5. A szövegállományban található szöveg Caesar módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé kis és nagybetűje plusz a kérdőjel és szóköz felett végeztük, összesen 54 szimbólumot használva. A kisbetűknek a 0 és 25 közötti számkódokat, a nagybetűknek a 26 és 51 közöttieket, a kérdőjelnek az 52, a szóköznek pedig az 53 számkódot feleltettük meg. Egyéb írásjeleket nem tartalmazott az eredti fájl. Határozzuk meg az eredeti szöveget és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével.
 import sys
 
 def char_to_code(c):

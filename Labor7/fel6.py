@@ -1,3 +1,4 @@
+#6. A crypted7_6.jpg AES-CBC módszerrel volt rejtjelezve, ahol az alkalmazott iv a titkosított file első 16 bájtja. Határozzuk meg az eredeti jpg filet, ha az AES 32 bájtos kulcs titkosított értékét hexában a cryptedAESkey7_6.txt-ben találjuk. Az AES kulcs RSA-OAEP-vel volt titkosítva, ahol az RSA privát kulcs az RSA_privKey7_6.pem állományban található, és adott az állományhoz való hozzáférési jelszó SHA256-os értéke: 591a6e49ad819403426545301221da1764be6c58727b18831cc7d4bf8dbff4e9.
 import hashlib
 import os
 from Crypto.Cipher import AES, PKCS1_OAEP

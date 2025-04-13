@@ -1,3 +1,4 @@
+#4. Egy jpg állomány CBC blokk-titkosító módszert alkalmazva, affine, mod 256 titkosítóval volt titkosítva. Határozzuk meg az eredeti jpg állományt, a jpg titkosított értéke alapján, tudva, hogy az IV értéke (19), a titkosító kulcs pedig (157, 45).
 import numpy as np
 from PIL import Image
 

@@ -1,3 +1,7 @@
+#1. Írjunk programot, amely háromféle módszerrel is meghatározza a multiplikatív inverzét mod b szerint. A három módszer a következő legyen:
+#az összes érték kipróbálásának módszere
+#a bináris kiterjesztett Eukleidészi algoritmus
+#a kis-Fermat tételén (ha b prímszám), Euler tételén (tetszőleges b-re) alapuló algoritmus
 def bruteforce_inverse(a, b):
     """Find multiplicative inverse of a mod b using brute force method"""
     for x in range(1, b):

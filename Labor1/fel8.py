@@ -1,3 +1,6 @@
+# Nagyon egyszerű, de ugyanakkor nem biztonságos titkosító algoritmus az, amikor egy szöveget úgy rejtjelezünk, hogy permutáljuk az ábécé betűit: minden betűnek egy másik ábécébeli betűt feleltetünk meg. A titkosítás természetesen egyértelmű, azaz nincs két olyan betű, melyeknek ugyanaz lenne a titkosított értéke. Egy jól ismert feltörési stratégia az ismert nyílt szöveg alapú támadás, amikor a támadónak rendelkezésére áll egy titkosított szöveg, ami alapján megpróbálja az eredeti szöveget (nyílt szöveget) meghatározni. A feladat az, hogy fejtsünk vissza több titkosított sort, feltételezve, hogy minden sor esetében ugyanazt a titkosítási eljárást alkalmaztuk és a titkosított sorok között ott van a következő nyílt szöveg titkosított értéke:
+
+#the quick brown fox jumps over the lazy dog
 def find_mapping(ciphertext, plaintext):
     """Find possible mapping from ciphertext to plaintext characters"""
     mapping = {}

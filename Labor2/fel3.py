@@ -1,3 +1,8 @@
+#3. Az alábbi titkosított szöveg, affin módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé 26 betűje felett végeztük, és az angol ábécé betűin kívül más írásjelet nem titkosítottunk. Határozzuk meg az eredeti szöveget és a kulcspárt, az összes lehetséges kulcs kipróbálásának módszerével, tudva azt, hogy az eredeti szöveg egy magyar szöveg, amely tartalmazza az AZ szót.
+
+#EX GKLGTGWRGW BE HGDPGAODRG KIRZEX EKIH WIVERREW, RGK VEDRE E PEVOWTE. BGTEWDGIHYAX
+import re
+
 def extended_gcd(a, b):
     if a == 0:
         return b, 0, 1
@@ -54,7 +59,7 @@ def brute_force_affine(ciphertext, target_word="AZ"):
     for a in valid_a_values:
         for b in range(26):
             decrypted = affine_decrypt(ciphertext, a, b)
-            if decrypted and target_word in decrypted:
+            if decrypted and re.match(f"\\b{target_word}\\b", decrypted):
                 results.append((a, b, decrypted))
     
     return results

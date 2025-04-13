@@ -1,3 +1,5 @@
+#2. Az alábbi titkosított szöveg Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást az angol ábécé 26 betűje felett végezték Határozzuk meg az eredeti szöveget, tudva, hogy a rejtjelezéshez használt kulcs: (6, 13, 7, 8).
+#AOGWEPOFKHSVRWYUKDAZKVYYNGYPQFKAWROZIEATIYROLMYYOSNRLIACOFJAGIUT
 import numpy as np
 
 def modular_inverse(a, m):

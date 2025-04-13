@@ -1,3 +1,4 @@
+#3. A PasswdSHA256Salt.json állományban személyek nevei, jelszavaiknak hash értéke és a megfelelő salt értékek találhatók. A hash értékek a Python hashlib.pbkdf2_hmac kulcs deriváló függvényével voltak létrehozva, ahol az alkalmazott hash függvény az SHA3-256-os volt és az iterációszám csak 1000-re volt állítva. Tudva, hogy néhány személyeknek jelszava a leggyakrabban használt jelszavak közül került ki, határozzuk meg ezeket a személyeket, illetve a jelszavaikat. A leggyakrabban használt jelszavakat a 10-million-password-list-top-10000.txt állományban találjuk.
 import json
 import hashlib
 import base64

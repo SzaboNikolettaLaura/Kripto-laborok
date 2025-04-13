@@ -1,3 +1,4 @@
+#5. Az előző feladatnál, akiknek sikerült a jelszavát feltörni, azok esetében végezzük el a következőket: mentsük ki egy json állományba a személyek nevét, a jelszavak hashértékét, és a salt-ot, de most a jelszavak hash értékét az scrypt-el vagy bcrypt-el hozzuk létre (scrypt/bcrypt). Sikerül-e ebben az esetben is feltörni a jelszavakat?
 import json
 import hashlib
 import base64

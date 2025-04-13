@@ -1,3 +1,4 @@
+#5. Egy jpg állomány CBC blokk-titkosító módszert alkalmazva, Hill, mod 256 titkosítóval volt titkosítva. Határozzuk meg az eredeti jpg állományt, a jpg titkosított értéke alapján, ismerve a titkosító kulcsot, illetve tudva azt, hogy az IV értéke a titkosított állomány utolsó négy bájtjára van beírva
 import numpy as np
 from PIL import Image
 

@@ -1,3 +1,4 @@
+#3. Generáljunk véletlenszerűen 2048 bites Diffie-Hellman publikus paramétert, mentsük ki a generált értékeket egy állományba, majd ezeket felhasználva a Schnorr aláírási sémát alkalmazva határozzuk meg egy tetszőleges bájtszekvencia digitális aláírását, illetve ellenőrizzük le a létrehozott aláírást.
 import os
 import random
 import hashlib

@@ -1,3 +1,4 @@
+#7. Titkosítsunk és fejtsünk vissza egy bináris állományt, ChaCha20-Poly130 titkosítást alkalmazva, ahol a nonce és kulcs értékeket generáljuk véletlenszerűen. A titkosítás során az állomány elejére írjuk be a nonce értékét, majd a végére a hitelesítő tag-et. Visszafejtéskor elenőrzizzük le azt is, hogy nem-e módosult az állomány tartalma. A generált kulcsot írjuk ki egy szövegállományba base64-es alakba. Az előző feladathoz képest jobb-e a futási idő? Hogyan járunk el ha az állományt csak részenként tudjk beolvasni, ha a teljes tartalom nem fér el a memóriában?
 import os
 import time
 import base64

@@ -1,3 +1,10 @@
+# 4. Az alábbi két titkosított szöveg, affin módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé nagybetűi, a vessző, a pont és a szóköz felett végeztük, összesen M = 29 szimbólumot használva. A nagybetűknek a 0 és 26 közötti számkódokat, a vesszőnek a 26, a pontnak a 27, a szóköznek pedig a 28-as számkódot feleltettük meg. Egyéb írásjeleket nem tartalmazott az eredti fájl. Határozzuk meg mindkét esetben az eredeti szöveget és a rejtjelezéshez használt kulcsot, a következő módszerrel (ismert nyílt szövegű támadás / known plaintext attack):
+
+# Feltételezzük, hogy betűgyakoriság alapján sikerült megállapítani két betű rejtjelezett értékét, azaz tudjuk, hogy x1-nek y1 és az x2-nek az y2 a rejtjele, akkor a következő kongruenciarendszer megoldásával, ahol az ismeretlenek a, b, megállapítható a titkosításhoz használt (a, b) kulcs:
+# x1 · a + b = y1 mod M
+# x2 · a + b = y2 mod M.
+# Az első szöveg esetében tudjuk, hogy A-nak K, és O-nak D a rejtjele.
+# A második szöveg esetében tudjuk, hogy I-nek K, és O-nak J a rejtjele.
 def extended_gcd(a, b):
     if a == 0:
         return b, 0, 1

@@ -1,3 +1,9 @@
+# 2. A pk9_2.json állományban szerverek nevei és a szerverek publikus kulcsainak hexa alakja található. Írjunk egy programot, amely felhasználva egy központi hatóság privateKeyECC_CA_9_2.pem állományban található privát kulcsát létrehoz egy másik json állományt, amelybe átírja a szerver neveket, a publikus kulcsokat, és a központi hatóság által létrehozott digitális aláírást, ahol az aláírást a szerverek nyers (raw) publikus kulcsaira alkalmazzuk.
+# Megjegyzések:
+
+# A hatóság privát kulcsa, illetve a szerverek publikus kulcsai Ed25519-es elliptikus görbét alkalmazva voltak létrehozva.
+# A hatóság privát kulcsa PBKDF2WithHMAC-SHA512AndAES256-CBC sémát alkalmazva volt titkosítva, ahol a CA_Password9_2 jelszó került alkalmazásra.
+# A digitális aláírások meghatározásához tetszőleges aláírási sémát alkalmazhatunk.
 import json
 import base64
 from pathlib import Path

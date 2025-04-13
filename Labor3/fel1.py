@@ -1,3 +1,4 @@
+#1. Írjunk programot, mely Hill módszerrel titkosít és visszafejt egy tetszőleges szövegállományt
 import math
 import random
 import sympy as sp
@@ -30,6 +31,15 @@ def text_to_matrix(text, n, MOD):
     
     return blocks
 
+def bytes_to_matrix(data, n, MOD):
+    if len(data) % n != 0:
+        raise Exception("Input not sized correctly")
+    blocks = []
+    for i in range(0, len(data), n):
+        block = sp.Matrix([[data[i+j] % MOD] for j in range(n)])
+        blocks.append(block)
+    return blocks
+
 def matrix_to_text(matrices, MOD):
     text = ""
     for matrix in matrices:
@@ -53,10 +63,10 @@ def encrypt_file(input_file, output_file, key, n, MOD):
             encrypted_blocks.append(encrypted_block)
         
         # Save encrypted data
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, 'wb') as f:
             for block in encrypted_blocks:
                 for i in range(block.rows):
-                    f.write(chr(int(block[i, 0])))
+                    f.write(int(block[i, 0]).to_bytes(1, 'little'))
         
         print(f"File encrypted successfully: {output_file}")
     
@@ -65,11 +75,11 @@ def encrypt_file(input_file, output_file, key, n, MOD):
 
 def decrypt_file(input_file, output_file, key_inv, n, MOD):
     try:
-        with open(input_file, 'r', encoding='utf-8') as f:
+        with open(input_file, 'rb') as f:
             text = f.read()
         
         # Convert encrypted text to matrix blocks
-        blocks = text_to_matrix(text, n, MOD)
+        blocks = bytes_to_matrix(text, n, MOD)
         
         # Decrypt each block
         decrypted_blocks = []

@@ -1,3 +1,4 @@
+#6. Írjunk programot, mely a Keyword Caesar módszerével titkosít és visszafejt egy tetszőleges szövegállományt. A szövegállományon végezzünk elő-feldolgozást, oly módon hogy minden betűt alakítsunk nagybetűvé. A titkosítást az angol ábécé nagybetűinek megfelelő számkódokon (számkód tábla) végezzük.
 import sys
 
 def preprocess(text):

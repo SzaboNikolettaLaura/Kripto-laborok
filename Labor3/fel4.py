@@ -1,3 +1,4 @@
+#4. A titkosított állomány Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást a bájtok felett végezték (mod 256-al kell számolni!!). Tudva azt, hogy az "0x28 0x03"-nek "0x09 0xb7" és "0xff 0xd9"-nek "0xac 0xfb" a rejtjele határozzuk meg az eredeti jpeg állományt.
 import numpy as np
 
 def mod_inverse(a, m):

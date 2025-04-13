@@ -1,0 +1,4586 @@
+
+
+================================================================================
+File: Labor1/fel1.py
+================================================================================
+
+# 1. Írjunk programot, mely Caesar módszerével titkosít és visszafejt egy tetszőleges szövegállományt.
+# A szövegállományon végezzünk elő-feldolgozást, oly módon hogy minden betűt alakítsunk nagybetűvé.
+# A titkosítást az angol ábécé nagybetűinek megfelelő számkódokon (számkód tábla) végezzük.
+
+def caesar_encryption(text, shift):
+    result = ""
+    for char in text:
+        if char.isalpha():
+            char = char.upper()
+            char = (ord(char) - 65 + shift) % 26 + 65 
+            result += chr(char)
+        else:
+            result += char
+    return result
+
+def caesar_decrypt(text, shift):
+    return caesar_encryption(text, -shift)
+
+def file_processing(input_file, output_file, shift, mode):
+    try:
+        with open(input_file, 'r') as file:
+            text = file.read()
+        if mode == 'encrypt':
+            encrypted_text = caesar_encryption(text, shift)
+        elif mode == 'decrypt':
+            encrypted_text = caesar_decrypt(text, shift)
+        else:
+            raise ValueError("Nem letezik a mod amit irtal")
+        with open(output_file, 'w') as file:
+            file.write(encrypted_text)
+    except FileNotFoundError:
+        print(f"Error: Nem letezik a file: {input_file}.")
+    except IOError:
+        print(f"Error: nem lehetett olvasni az input filet: {input_file}.")
+    except ValueError as e:
+        print(e)
+
+def main():
+    input_file = input("input file: ")
+    output_file = input("output file: ")
+    shift = int(input("Eltolas ertek: "))
+    mode = input("Ird be a modot(encrypt/decrypt): ")
+    file_processing(input_file, output_file, shift, mode)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+================================================================================
+File: Labor1/fel2.py
+================================================================================
+
+#2. A szöveg Caesar módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé 26 betűje felett végeztük, a szóközöket és egyéb írásjeleket nem titkosítottuk.
+#Határozzuk meg az eredeti szöveget és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével.
+
+def caesar_decrypt(ciphertext):
+    for key in range(26):
+        decrypted = ""
+        for char in ciphertext:
+            if char.isalpha():
+                shifted = ord(char) - key
+                if char.islower():
+                    if shifted < ord('a'):
+                        shifted += 26
+                else:
+                    if shifted < ord('A'):
+                        shifted += 26
+                decrypted += chr(shifted)
+            else:
+                decrypted += char
+        print(f"Key {key}: {decrypted}")
+
+with open('encrypted_text.txt', 'r') as file:
+    ciphertext = file.read().strip()
+    caesar_decrypt(ciphertext)
+
+
+
+================================================================================
+File: Labor1/fel3.py
+================================================================================
+
+#3. A klasszikus Caesar módszere az angol (latin) ábécé felett végzi a titkosítást. Írjunk programot, amely a Caesar titkosítást/visszafejtést bináris állományokon, bájtok felett végzi.
+
+def caesar_encrypt(input_file, output_file, shift):
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        while True:
+            chunk = f_in.read(1024)
+            if not chunk:
+                break
+            encrypted_chunk = bytes((b + shift) % 256 for b in chunk)
+            f_out.write(encrypted_chunk)
+
+def caesar_decrypt(input_file, output_file, shift):
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        while True:
+            chunk = f_in.read(1024)
+            if not chunk:
+                break
+            decrypted_chunk = bytes((b - shift) % 256 for b in chunk)
+            f_out.write(decrypted_chunk)
+
+def main():
+    import sys
+    if len(sys.argv) != 5:
+        print("Usage: python fel3.py <encrypt/decrypt> <input_file> <output_file> <shift>")
+        sys.exit(1)
+
+    operation = sys.argv[1]
+    input_file = sys.argv[2]
+    output_file = sys.argv[3]
+    shift = int(sys.argv[4])
+
+    if operation == 'encrypt':
+        caesar_encrypt(input_file, output_file, shift)
+    elif operation == 'decrypt':
+        caesar_decrypt(input_file, output_file, shift)
+    else:
+        print("Invalid operation. Use 'encrypt' or 'decrypt'")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+File: Labor1/fel4.py
+================================================================================
+
+#4. A állomány Caesar módszerrel volt rejtjelezve, ahol a titkosítást bájtok felett végeztük. Határozzuk meg az eredeti txt típusű állományt és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével. Az összes lehetséges kimeneti állomány között csak a felel meg az eredeti txt-nek, amelyik csak nyomtatható ASCII karaktereket és a 10 és 13-as ASCII kodú karaktereket tartalmazza.
+import sys
+
+def is_valid_text(text):
+    for c in text:
+        if not (32 <= ord(c) <= 126 or ord(c) in [10, 13]):
+            return False
+    return True
+
+def caesar_decrypt(data, key):
+    return bytes((b - key) % 256 for b in data)
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python fel4.py <input_file>")
+        return
+
+    input_file = sys.argv[1]
+    try:
+        with open(input_file, 'rb') as f:
+            encrypted_data = f.read()
+    except IOError:
+        print(f"Error: Could not open file {input_file}")
+        return
+
+    for key in range(256):
+        decrypted_data = caesar_decrypt(encrypted_data, key)
+        decrypted_text = decrypted_data.decode('latin1')
+        if is_valid_text(decrypted_text):
+            print(f"Key: {key}")
+            print("Decrypted text:")
+            print(decrypted_text)
+            print("-" * 50)
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor1/fel5.py
+================================================================================
+
+#5. A szövegállományban található szöveg Caesar módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé kis és nagybetűje plusz a kérdőjel és szóköz felett végeztük, összesen 54 szimbólumot használva. A kisbetűknek a 0 és 25 közötti számkódokat, a nagybetűknek a 26 és 51 közöttieket, a kérdőjelnek az 52, a szóköznek pedig az 53 számkódot feleltettük meg. Egyéb írásjeleket nem tartalmazott az eredti fájl. Határozzuk meg az eredeti szöveget és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével.
+import sys
+
+def char_to_code(c):
+    if 'a' <= c <= 'z':
+        return ord(c) - ord('a')
+    elif 'A' <= c <= 'Z':
+        return ord(c) - ord('A') + 26
+    elif c == '?':
+        return 52
+    elif c == ' ':
+        return 53
+    return None
+
+def code_to_char(code):
+    if 0 <= code <= 25:
+        return chr(code + ord('a'))
+    elif 26 <= code <= 51:
+        return chr(code - 26 + ord('A'))
+    elif code == 52:
+        return '?'
+    elif code == 53:
+        return ' '
+    return None
+
+def is_valid_text(text):
+    for c in text:
+        if char_to_code(c) is None:
+            return False
+    return True
+
+def caesar_decrypt(text, key):
+    result = []
+    for c in text:
+        code = char_to_code(c)
+        if code is not None:
+            decrypted_code = (code - key) % 54
+            result.append(code_to_char(decrypted_code))
+    return ''.join(result)
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python fel5.py <input_file>")
+        return
+
+    input_file = sys.argv[1]
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            encrypted_text = f.read().strip()
+    except IOError:
+        print(f"Error: Could not open file {input_file}")
+        return
+
+    for key in range(54):
+        decrypted_text = caesar_decrypt(encrypted_text, key)
+        if is_valid_text(decrypted_text):
+            print(f"Key: {key}")
+            print("Decrypted text:")
+            print(decrypted_text)
+            print("-" * 50)
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor1/fel6.py
+================================================================================
+
+#6. Írjunk programot, mely a Keyword Caesar módszerével titkosít és visszafejt egy tetszőleges szövegállományt. A szövegállományon végezzünk elő-feldolgozást, oly módon hogy minden betűt alakítsunk nagybetűvé. A titkosítást az angol ábécé nagybetűinek megfelelő számkódokon (számkód tábla) végezzük.
+import sys
+
+def preprocess(text):
+    return text.upper()
+
+def create_keyword_table(keyword):
+    keyword = keyword.upper()
+    seen = set()
+    table = []
+    for c in keyword:
+        if c not in seen and c.isalpha():
+            seen.add(c)
+            table.append(c)
+    for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        if c not in seen:
+            table.append(c)
+    return table
+
+def encrypt(text, keyword, shift):
+    table = create_keyword_table(keyword)
+    result = []
+    for c in text:
+        if c.isalpha():
+            idx = table.index(c)
+            new_idx = (idx + shift) % 26
+            result.append(table[new_idx])
+        else:
+            result.append(c)
+    return ''.join(result)
+
+def decrypt(text, keyword, shift):
+    table = create_keyword_table(keyword)
+    result = []
+    for c in text:
+        if c.isalpha():
+            idx = table.index(c)
+            new_idx = (idx - shift) % 26
+            result.append(table[new_idx])
+        else:
+            result.append(c)
+    return ''.join(result)
+
+def main():
+    if len(sys.argv) != 6:
+        print("Usage: python fel6.py <input_file> <output_file> <keyword> <shift> <mode>")
+        print("mode: 'encrypt' or 'decrypt'")
+        sys.exit(1)
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    keyword = sys.argv[3]
+    shift = int(sys.argv[4])
+    mode = sys.argv[5]
+    with open(input_file, 'r') as f:
+        text = f.read()
+    processed = preprocess(text)
+    if mode == 'encrypt':
+        result = encrypt(processed, keyword, shift)
+    elif mode == 'decrypt':
+        result = decrypt(processed, keyword, shift)
+    else:
+        print("Invalid mode. Use 'encrypt' or 'decrypt'")
+        sys.exit(1)
+    with open(output_file, 'w') as f:
+        f.write(result)
+    print(f"{mode.capitalize()}ed text written to {output_file}")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor1/fel7.py
+================================================================================
+
+#7. Az alábbi titkosított szöveg Keyword Caesar módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé 26 betűje felett végeztük, a szóközöket és egyéb írásjeleket nem titkosítottuk. Határozzuk meg az eredeti szöveget, betűgyakoriság vizsgálattal (angol betűgyakoriság tábla), illetve határozzuk meg a rejtjelezéshez használt kulcsot.
+def count_letter_frequency(text):
+    # Only count alphabetic characters
+    frequency = {}
+    total = 0
+    for char in text:
+        if char.isalpha():
+            char = char.upper()
+            frequency[char] = frequency.get(char, 0) + 1
+            total += 1
+    
+    # Convert to percentages
+    for char in frequency:
+        frequency[char] = (frequency[char] / total) * 100
+    
+    # Sort by frequency
+    sorted_freq = sorted(frequency.items(), key=lambda x: x[1], reverse=True)
+    return sorted_freq, total
+
+def count_ngrams(text, n):
+    ngrams = {}
+    text = ''.join(c for c in text.upper() if c.isalpha() or c == ' ')
+    
+    for i in range(len(text) - n + 1):
+        if ' ' not in text[i:i+n]:  # Skip ngrams with spaces
+            ngram = text[i:i+n]
+            if len(ngram) == n:
+                ngrams[ngram] = ngrams.get(ngram, 0) + 1
+    
+    # Sort by frequency
+    sorted_ngrams = sorted(ngrams.items(), key=lambda x: x[1], reverse=True)
+    return sorted_ngrams
+
+def find_common_words(text):
+    word_freq = {}
+    text = ''.join(c if c.isalpha() or c.isspace() else ' ' for c in text.upper())
+    words = text.split()
+    
+    for word in words:
+        if len(word) >= 2:  # Only count words with length >= 2
+            word_freq[word] = word_freq.get(word, 0) + 1
+    
+    # Sort by frequency
+    sorted_words = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)
+    return sorted_words
+
+def create_keyword_table(keyword):
+    keyword = keyword.upper()
+    seen = set()
+    table = []
+    for c in keyword:
+        if c not in seen and c.isalpha():
+            seen.add(c)
+            table.append(c)
+    for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        if c not in seen:
+            table.append(c)
+    return table
+
+def count_ngram_matches(text, ngram):
+    """Count how many times an ngram appears in the text"""
+    return text.upper().count(ngram.upper())
+
+def decrypt(text, keyword, shift):
+    table = create_keyword_table(keyword)
+    result = []
+    for c in text:
+        if c.isalpha():
+            idx = table.index(c)
+            new_idx = (idx - shift) % 26
+            result.append(table[new_idx])
+        else:
+            result.append(c)
+    return ''.join(result)
+
+
+def english_letter_frequencies():
+    """Return standard English letter frequencies."""
+    return {
+        'E': 12.70, 'T': 9.06, 'A': 8.17, 'O': 7.51, 'I': 6.97, 
+        'N': 6.75, 'S': 6.33, 'H': 6.09, 'R': 5.99, 'D': 4.25, 
+        'L': 4.03, 'C': 2.78, 'U': 2.76, 'M': 2.41, 'W': 2.36, 
+        'F': 2.23, 'G': 2.02, 'Y': 1.97, 'P': 1.93, 'B': 1.29, 
+        'V': 0.98, 'K': 0.77, 'J': 0.15, 'X': 0.15, 'Q': 0.10, 'Z': 0.07
+    }
+
+def get_english_common_ngrams():
+    """Return the most common 2-letter and 3-letter combinations in English."""
+    two_letter = {
+        "TH": 3.88, "HE": 3.68, "IN": 2.28, "ER": 2.17, "AN": 2.14,
+        "RE": 1.74, "ND": 1.57, "ON": 1.41, "EN": 1.38, "AT": 1.33,
+        "OU": 1.28, "ED": 1.27, "HA": 1.27, "TO": 1.16, "OR": 1.15,
+        "IT": 1.13, "IS": 1.10, "HI": 1.09, "ES": 1.09, "NG": 1.05
+    }
+    
+    three_letter = {
+        "THE": 3.50, "AND": 1.593, "ING": 1.147, "HER": 0.822, "HAT": 0.650,
+        "HIS": 0.596, "THA": 0.593, "ERE": 0.560, "FOR": 0.555, "ENT": 0.530,
+        "ION": 0.506, "TER": 0.461, "WAS": 0.460, "YOU": 0.437, "ITH": 0.431,
+        "VER": 0.430, "ALL": 0.422, "WIT": 0.397, "THI": 0.394, "TIO": 0.378
+    }
+    
+    return two_letter, three_letter
+
+ciphertext = """GUR TERRXF BS GUR PYNFFVPNY REN ZNQR FRIRENY ABGNOYR PBAGEVOHGVBAF GB FPVRAPR NAQ URYCRQ YNL GUR SBHAQNGVBAF BS FRIRENY JRFGREA FPVRAGVSVP GENQVGVBAF, YVXR CUVYBFBCUL, UVFGBEVBTENCUL NAQ ZNGURZNGVPF. GUR FPUBYNEYL GENQVGVBA BS GUR TERRX NPNQRZVRF JNF ZNVAGNVARQ QHEVAT EBZNA GVZRF JVGU FRIRENY NPNQRZVP VAFGVGHGVBAF VA PBAFGNAGVABCYR, NAGVBPU, NYRKNAQEVN NAQ BGURE PRAGERF BS TERRX YRNEAVAT JUVYR RNFGREA EBZNA FPVRAPR JNF RFFRAGVNYYL N PBAGVAHNGVBA BS PYNFFVPNY FPVRAPR. TERRXF UNIR N YBAT GENQVGVBA BS INYHVAT NAQ VAIRFGVAT VA CNVQRVN (RQHPNGVBA). CNVQRVN JNF BAR BS GUR UVTURFG FBPVRGNY INYHRF VA GUR TERRX NAQ URYYRAVFGVP JBEYQ JUVYR GUR SVEFG RHEBCRNA VAFGVGHGVBA QRFPEVORQ NF N HAVIREFVGL JNF SBHAQRQ VA PBAFGNAGVABCYR NAQ BCRENGRQ VA INEVBHF VAPNEANGVBAF."""
+def main():
+    # Direct input of ciphertext
+
+    print("Analyzing ciphertext using ngrams...")
+    
+    # Define the n-grams to test
+    two_letter_ngrams = [
+        "TH", "HE", "IN", "ER", "AN", "RE", "ND", "ON", "EN", "AT", 
+        "OU", "ED", "HA", "TO", "OR", "IT", "IS", "HI", "ES", "NG"
+    ]
+    
+    three_letter_ngrams = [
+        "THE", "AND", "ING", "HER", "HAT", "HIS", "THA", "ERE", "FOR", "ENT",
+        "ION", "TER", "WAS", "YOU", "ITH", "VER", "ALL", "WIT", "THI", "TIO"
+    ]
+    
+    all_ngrams = two_letter_ngrams + three_letter_ngrams
+    
+    # Test each ngram
+    results = []
+    
+    print("Testing all ngrams one by one with all possible shifts...")
+    for ngram in all_ngrams:
+        best_shift = 0
+        best_count = -1
+        best_decrypted = ""
+        
+        # Try all possible shifts for this ngram
+        for shift in range(26):
+            decrypted = decrypt(ciphertext, ngram, shift)
+            
+            # Count how many times this ngram appears in the decrypted text
+            count = count_ngram_matches(decrypted, ngram)
+            
+            if count > best_count:
+                best_count = count
+                best_shift = shift
+                best_decrypted = decrypted
+        
+        # Store results
+        results.append({
+            'ngram': ngram,
+            'shift': best_shift,
+            'count': best_count,
+            'decrypted': best_decrypted
+        })
+        
+        print(f"Ngram: {ngram}, Best Shift: {best_shift}, Matches: {best_count}")
+    
+    # Sort by count (higher is better)
+    results.sort(key=lambda x: x['count'], reverse=True)
+    
+    print("\nTop 5 results:")
+    for i, result in enumerate(results, 1):
+        print(f"{i}. Keyword: {result['ngram']}, Shift: {result['shift']}, Matches: {result['count']}")
+        print(f"   Sample: {result['decrypted'][:100]}")
+    
+    best_result = results[0]
+    print(f"\nBest keyword appears to be: {best_result['ngram']} with shift {best_result['shift']}")
+    print("\nDecrypted text:")
+    print(best_result['decrypted'])
+    
+    # Print the keyword and how it maps
+    keyword = best_result['ngram']
+    shift = best_result['shift']
+    key_alphabet = create_keyword_table(keyword)
+    
+    print("\nSolution:")
+    print(f"Keyword: {keyword}")
+    print(f"Shift: {shift}")
+    print(f"Standard alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    print(f"Cipher alphabet:   {key_alphabet}")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+File: Labor1/fel8.py
+================================================================================
+
+# Nagyon egyszerű, de ugyanakkor nem biztonságos titkosító algoritmus az, amikor egy szöveget úgy rejtjelezünk, hogy permutáljuk az ábécé betűit: minden betűnek egy másik ábécébeli betűt feleltetünk meg. A titkosítás természetesen egyértelmű, azaz nincs két olyan betű, melyeknek ugyanaz lenne a titkosított értéke. Egy jól ismert feltörési stratégia az ismert nyílt szöveg alapú támadás, amikor a támadónak rendelkezésére áll egy titkosított szöveg, ami alapján megpróbálja az eredeti szöveget (nyílt szöveget) meghatározni. A feladat az, hogy fejtsünk vissza több titkosított sort, feltételezve, hogy minden sor esetében ugyanazt a titkosítási eljárást alkalmaztuk és a titkosított sorok között ott van a következő nyílt szöveg titkosított értéke:
+
+#the quick brown fox jumps over the lazy dog
+def find_mapping(ciphertext, plaintext):
+    """Find possible mapping from ciphertext to plaintext characters"""
+    mapping = {}
+    reverse_mapping = {}
+    
+    # Split into words to analyze structure
+    cipher_words = ciphertext.split()
+    plain_words = plaintext.split()
+    
+    # Check if word count matches
+    if len(cipher_words) != len(plain_words):
+        return None
+    
+    # Check if word lengths match
+    for i, (cipher_word, plain_word) in enumerate(zip(cipher_words, plain_words)):
+        if len(cipher_word) != len(plain_word):
+            return None
+    
+    # Try to build the substitution map
+    for c, p in zip(ciphertext, plaintext):
+        if c == ' ' and p == ' ':
+            continue
+            
+        if c in mapping:
+            # This cipher character was already mapped
+            if mapping[c] != p:
+                return None  # Inconsistent mapping
+        elif p in reverse_mapping:
+            # This plain character was already mapped to
+            if reverse_mapping[p] != c:
+                return None  # Inconsistent mapping
+        else:
+            # New mapping
+            mapping[c] = p
+            reverse_mapping[p] = c
+    
+    return mapping
+
+def decrypt(ciphertext, mapping):
+    """Decrypt text using the provided mapping"""
+    result = ""
+    for c in ciphertext:
+        if c == ' ':
+            result += ' '
+        elif c in mapping:
+            result += mapping[c]
+        else:
+            # Character not in mapping, keep as is
+            result += c
+    return result
+
+def complete_mapping(partial_mapping):
+    """Complete a partial mapping to cover all lowercase letters"""
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    reverse_mapping = {v: k for k, v in partial_mapping.items()}
+    
+    # Find unused cipher and plain characters
+    unused_cipher = [c for c in alphabet if c not in partial_mapping]
+    unused_plain = [c for c in alphabet if c not in reverse_mapping]
+    
+    # Create a complete mapping by connecting unused characters
+    if len(unused_cipher) != len(unused_plain):
+        return None
+        
+    for c, p in zip(unused_cipher, unused_plain):
+        partial_mapping[c] = p
+        
+    return partial_mapping
+
+def solve_case(lines):
+    known_plaintext = "the quick brown fox jumps over the lazy dog"
+    
+    # Try each line as the known plaintext
+    for known_line in lines:
+        mapping = find_mapping(known_line, known_plaintext)
+        if mapping is None:
+            continue
+            
+        # Complete the mapping to cover all lowercase letters
+        complete_mapping(mapping)
+        
+        # Try to decrypt all lines with this mapping
+        decrypted = [decrypt(line, mapping) for line in lines]
+        
+        # Check if the decryption contains only valid characters
+        valid = True
+        for line in decrypted:
+            for c in line:
+                if c != ' ' and not ('a' <= c <= 'z'):
+                    valid = False
+                    break
+            if not valid:
+                break
+                
+        if valid:
+            return decrypted
+    
+    return ["No solution"]
+
+def main():
+    try:
+        with open("lab8_input.txt", "r") as file:
+            lines = file.read().strip().split('\n')
+    except:
+        # If file can't be opened, read from standard input
+        import sys
+        lines = sys.stdin.read().strip().split('\n')
+    
+    num_cases = int(lines[0])
+    
+    case_start = 2  # Skip the first line (num_cases) and the empty line
+    results = []
+    
+    for _ in range(num_cases):
+        case_lines = []
+        while case_start < len(lines) and lines[case_start] != '':
+            case_lines.append(lines[case_start])
+            case_start += 1
+        
+        # Process this case
+        case_result = solve_case(case_lines)
+        results.append(case_result)
+        
+        # Skip the empty line between cases
+        case_start += 1
+    
+    # Output results
+    for i, case_result in enumerate(results):
+        if i > 0:
+            print()  # Empty line between cases
+        for line in case_result:
+            print(line)
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor2/fel1.py
+================================================================================
+
+#1. Írjunk programot, amely háromféle módszerrel is meghatározza a multiplikatív inverzét mod b szerint. A három módszer a következő legyen:
+#az összes érték kipróbálásának módszere
+#a bináris kiterjesztett Eukleidészi algoritmus
+#a kis-Fermat tételén (ha b prímszám), Euler tételén (tetszőleges b-re) alapuló algoritmus
+def bruteforce_inverse(a, b):
+    """Find multiplicative inverse of a mod b using brute force method"""
+    for x in range(1, b):
+        if (a * x) % b == 1:
+            return x
+    return None
+
+def extended_gcd(a, b):
+    """Extended Euclidean algorithm for gcd(a,b) and Bézout coefficients"""
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def fermat_euler_inverse(a, b):
+    """Find multiplicative inverse using Fermat's Little Theorem or Euler's Theorem"""
+    # Check if gcd(a,b) = 1
+    gcd, _, _ = extended_gcd(a, b)
+    if gcd != 1:
+        return None
+    
+    # Calculate Euler's totient (phi) function
+    def phi(n):
+        result = n
+        p = 2
+        while p * p <= n:
+            if n % p == 0:
+                while n % p == 0:
+                    n //= p
+                result -= result // p
+            p += 1
+        if n > 1:
+            result -= result // n
+        return result
+    
+    # Calculate using Euler's theorem: a^(φ(b)-1) ≡ a^(-1) (mod b)
+    return pow(a, phi(b) - 1, b)
+
+def main():
+    # Get input from user
+    a = int(input("Enter a: "))
+    b = int(input("Enter b: "))
+    
+    # Check if gcd(a,b) = 1
+    gcd, x, y = extended_gcd(a, b)
+    if gcd != 1:
+        print(f"The multiplicative inverse doesn't exist because gcd({a},{b}) = {gcd} ≠ 1")
+        return
+    
+    # Method 1: Brute force
+    inv1 = bruteforce_inverse(a, b)
+    print(f"Method 1 (Brute force): The multiplicative inverse of {a} mod {b} is {inv1}")
+    
+    # Method 2: Extended Euclidean algorithm
+    # Make sure the result is positive
+    inv2 = x % b
+    print(f"Method 2 (Extended Euclidean): The multiplicative inverse of {a} mod {b} is {inv2}")
+    
+    # Method 3: Fermat's Little Theorem or Euler's Theorem
+    inv3 = fermat_euler_inverse(a, b)
+    print(f"Method 3 (Fermat/Euler): The multiplicative inverse of {a} mod {b} is {inv3}")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel2.py
+================================================================================
+
+#2. Írjunk programot, mely affin módszerrel titkosít és visszafejt egy tetszőleges szövegállományt. A szövegállományon végezzünk elő-feldolgozást, oly módon hogy minden betűt alakítsunk nagybetűvé, és csak az angol ábécé betűit tartsuk meg, a többi karaktert vágjuk ki, majd az így kapott szöveg angol ábécé nagybetűinek feleltessük meg a megfelelő számkódokat (számkód tábla). A titkosítást a számkódokon végezzük.
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def preprocess_text(text):
+    # Convert to uppercase and remove non-alphabetic characters
+    result = ''
+    for char in text:
+        if char.isalpha():
+            result += char.upper()
+    return result
+
+def char_to_num(char):
+    # Convert character to number (A=0, B=1, ..., Z=25)
+    return ord(char) - ord('A')
+
+def num_to_char(num):
+    # Convert number to character (0=A, 1=B, ..., 25=Z)
+    return chr(num % 26 + ord('A'))
+
+def affine_encrypt(plaintext, a, b):
+    # Check if 'a' is valid (gcd(a, 26) = 1)
+    if extended_gcd(a, 26)[0] != 1:
+        raise ValueError("Invalid 'a' parameter. Must be coprime with 26.")
+    
+    # Preprocess the input text
+    plaintext = preprocess_text(plaintext)
+    
+    ciphertext = ''
+    for char in plaintext:
+        # Convert character to number
+        m = char_to_num(char)
+        # Apply affine transformation: c = (am + b) mod 26
+        c = (a * m + b) % 26
+        # Convert back to character
+        ciphertext += num_to_char(c)
+    
+    return ciphertext
+
+def affine_decrypt(ciphertext, a, b):
+    # Check if 'a' is valid (gcd(a, 26) = 1)
+    if extended_gcd(a, 26)[0] != 1:
+        raise ValueError("Invalid 'a' parameter. Must be coprime with 26.")
+    
+    # Calculate the modular multiplicative inverse of 'a'
+    a_inv = modinv(a, 26)
+    
+    plaintext = ''
+    for char in ciphertext:
+        # Convert character to number
+        c = char_to_num(char)
+        # Apply inverse affine transformation: m = a^-1 * (c - b) mod 26
+        m = (a_inv * (c - b)) % 26
+        # Convert back to character
+        plaintext += num_to_char(m)
+    
+    return plaintext
+
+def read_file(filename):
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        return ""
+
+def write_file(filename, content):
+    try:
+        with open(filename, 'w', encoding='utf-8') as file:
+            file.write(content)
+        print(f"File saved successfully to {filename}")
+    except Exception as e:
+        print(f"Error writing to file: {e}")
+
+def main():
+    print("Affine Cipher Program")
+    mode = input("Mode (encrypt/decrypt): ").lower()
+    
+    if mode not in ['encrypt', 'decrypt']:
+        print("Invalid mode! Please choose 'encrypt' or 'decrypt'.")
+        return
+    
+    input_file = input("Input file: ")
+    output_file = input("Output file: ")
+    
+    try:
+        a = int(input("Enter 'a' parameter (must be coprime with 26): "))
+        b = int(input("Enter 'b' parameter: "))
+        
+        if extended_gcd(a, 26)[0] != 1:
+            print("Error: 'a' parameter must be coprime with 26!")
+            return
+        
+        text = read_file(input_file)
+        
+        if mode == 'encrypt':
+            result = affine_encrypt(text, a, b)
+        else:  # decrypt
+            # Preprocess the ciphertext (in case it contains non-alphabetic characters)
+            text = preprocess_text(text)
+            result = affine_decrypt(text, a, b)
+        
+        write_file(output_file, result)
+        
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel3.py
+================================================================================
+
+#3. Az alábbi titkosított szöveg, affin módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé 26 betűje felett végeztük, és az angol ábécé betűin kívül más írásjelet nem titkosítottunk. Határozzuk meg az eredeti szöveget és a kulcspárt, az összes lehetséges kulcs kipróbálásának módszerével, tudva azt, hogy az eredeti szöveg egy magyar szöveg, amely tartalmazza az AZ szót.
+
+#EX GKLGTGWRGW BE HGDPGAODRG KIRZEX EKIH WIVERREW, RGK VEDRE E PEVOWTE. BGTEWDGIHYAX
+import re
+
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def char_to_num(char):
+    # Convert character to number (A=0, B=1, ..., Z=25)
+    return ord(char) - ord('A')
+
+def num_to_char(num):
+    # Convert number to character (0=A, 1=B, ..., 25=Z)
+    return chr(num % 26 + ord('A'))
+
+def affine_decrypt(ciphertext, a, b):
+    # Calculate the modular multiplicative inverse of 'a'
+    try:
+        a_inv = modinv(a, 26)
+    except:
+        return None  # If no modular inverse exists
+    
+    plaintext = ''
+    for char in ciphertext:
+        if char.isalpha():
+            # Convert character to number
+            c = char_to_num(char)
+            # Apply inverse affine transformation: m = a^-1 * (c - b) mod 26
+            m = (a_inv * (c - b)) % 26
+            # Convert back to character
+            plaintext += num_to_char(m)
+        else:
+            plaintext += char
+    
+    return plaintext
+
+def brute_force_affine(ciphertext, target_word="AZ"):
+    valid_a_values = []
+    for a in range(1, 26):
+        if extended_gcd(a, 26)[0] == 1:  # Check if a is coprime with 26
+            valid_a_values.append(a)
+    
+    results = []
+    for a in valid_a_values:
+        for b in range(26):
+            decrypted = affine_decrypt(ciphertext, a, b)
+            if decrypted and re.match(f"\\b{target_word}\\b", decrypted):
+                results.append((a, b, decrypted))
+    
+    return results
+
+def main():
+    ciphertext = "EX GKLGTGWRGW BE HGDPGAODRG KIRZEX EKIH WIVERREW, RGK VEDRE E PEVOWTE. BGTEWDGIHYAX"
+    
+    print("Trying all possible affine cipher keys to find Hungarian text containing 'AZ'...")
+    possible_decryptions = brute_force_affine(ciphertext)
+    
+    if possible_decryptions:
+        print(f"Found {len(possible_decryptions)} possible decryptions:")
+        for i, (a, b, decrypted) in enumerate(possible_decryptions, 1):
+            print(f"\n{i}. Key: a={a}, b={b}")
+            print(f"Decrypted text: {decrypted}")
+    else:
+        print("No valid decryption found containing 'AZ'.")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel4.py
+================================================================================
+
+# 4. Az alábbi két titkosított szöveg, affin módszerrel volt rejtjelezve, ahol a titkosítást az angol ábécé nagybetűi, a vessző, a pont és a szóköz felett végeztük, összesen M = 29 szimbólumot használva. A nagybetűknek a 0 és 26 közötti számkódokat, a vesszőnek a 26, a pontnak a 27, a szóköznek pedig a 28-as számkódot feleltettük meg. Egyéb írásjeleket nem tartalmazott az eredti fájl. Határozzuk meg mindkét esetben az eredeti szöveget és a rejtjelezéshez használt kulcsot, a következő módszerrel (ismert nyílt szövegű támadás / known plaintext attack):
+
+# Feltételezzük, hogy betűgyakoriság alapján sikerült megállapítani két betű rejtjelezett értékét, azaz tudjuk, hogy x1-nek y1 és az x2-nek az y2 a rejtjele, akkor a következő kongruenciarendszer megoldásával, ahol az ismeretlenek a, b, megállapítható a titkosításhoz használt (a, b) kulcs:
+# x1 · a + b = y1 mod M
+# x2 · a + b = y2 mod M.
+# Az első szöveg esetében tudjuk, hogy A-nak K, és O-nak D a rejtjele.
+# A második szöveg esetében tudjuk, hogy I-nek K, és O-nak J a rejtjele.
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def solve_affine_key(x1, y1, x2, y2, m):
+    """
+    Solve the congruence system to find affine key (a,b):
+    x1 * a + b ≡ y1 (mod m)
+    x2 * a + b ≡ y2 (mod m)
+    """
+    # Subtract the equations to eliminate b
+    # (x1 - x2) * a ≡ (y1 - y2) (mod m)
+    diff_x = (x1 - x2) % m
+    diff_y = (y1 - y2) % m
+    
+    # Find modular inverse of diff_x
+    try:
+        diff_x_inv = modinv(diff_x, m)
+    except Exception:
+        return None, None  # If no inverse exists
+    
+    # Compute a
+    a = (diff_y * diff_x_inv) % m
+    
+    # Compute b using the first equation
+    b = (y1 - a * x1) % m
+    
+    return a, b
+
+def num_to_char(num, m=29):
+    """Convert number to character in our expanded alphabet (A-Z, ',', '.', ' ')"""
+    if 0 <= num <= 25:
+        return chr(num + ord('A'))
+    elif num == 26:
+        return ','
+    elif num == 27:
+        return '.'
+    elif num == 28:
+        return ' '
+    else:
+        raise ValueError(f"Invalid number: {num} for alphabet size {m}")
+
+def char_to_num(char, m=29):
+    """Convert character to number in our expanded alphabet (A-Z, ',', '.', ' ')"""
+    if 'A' <= char <= 'Z':
+        return ord(char) - ord('A')
+    elif char == ',':
+        return 26
+    elif char == '.':
+        return 27
+    elif char == ' ':
+        return 28
+    else:
+        raise ValueError(f"Invalid character: {char} for alphabet size {m}")
+
+def affine_decrypt(ciphertext, a, b, m=29):
+    """Decrypt using affine cipher with the given key (a,b) and modulus m"""
+    try:
+        a_inv = modinv(a, m)
+    except Exception:
+        return None  # If no modular inverse exists
+    
+    plaintext = ''
+    for char in ciphertext:
+        try:
+            # Convert character to number
+            c = char_to_num(char, m)
+            # Apply inverse affine transformation: p = a^-1 * (c - b) mod m
+            p = (a_inv * (c - b)) % m
+            # Convert back to character
+            plaintext += num_to_char(p, m)
+        except ValueError:
+            # Keep any characters not in our alphabet unchanged
+            plaintext += char
+    
+    return plaintext
+
+def main():
+    # Define the alphabet size
+    M = 29
+    
+    # First ciphertext - A->K, O->D
+    ciphertext1 = "KZRGQKEGBDFZEKHKBBKHKSKFZFGBMKEGPKBKQKZBMDTHKTDZEDXBMIQPZKZEGTIPDBMGZPVKTIBMZWIXIMPIZWIT,ZEIHRIXGHZAH.,ZVDH.ZEIHEIQPIZKQS.IFAFKPZKYYKSZKMZGXDRDSPYKS,ZKEGFDQZKQS.IFASFZVDBBMKZIH.ISTDZPIBPASFZEKHKBBKHKOKTLLL"
+    x1, y1 = char_to_num('A', M), char_to_num('K', M)  # A -> K
+    x2, y2 = char_to_num('O', M), char_to_num('D', M)  # O -> D
+    
+    a1, b1 = solve_affine_key(x1, y1, x2, y2, M)
+    if a1 is not None and b1 is not None:
+        plaintext1 = affine_decrypt(ciphertext1, a1, b1, M)
+        print("First ciphertext:")
+        print(f"Key: a={a1}, b={b1}")
+        print(f"Decrypted: {plaintext1}")
+    else:
+        print("Failed to solve for the first key.")
+    
+    # Second ciphertext - I->K, O->J
+    ciphertext2 = "QKMJORJS,GJYUJA,PVNVYTIOAQVO,DVOOVAH,TVS,GJYUJA,OKOLSBOBACNJYIOA,ZIUU,V,DBYBTBORIOAH,VM,JSMNJOJS,DVURIOAH,V,NJXBADBSIOA,BS,BYYBOSMBODIOAH,BURSMJDVY,TKOGVMH,VTKN,BURBGIY,VYAJNIOA,TBUCOBT,NJYIOA,ZIUU,V,NBSNIOAH,V,DVURJOIOAH,V,PKXOBDIOA,BS,V,NKSMNSBUBKOAH,NBPVN,TKOGVMH,VTKN,OBT,BURBGIY,PJMNIOA,YBNXBC,BEKANBNJSM"
+    x1, y1 = char_to_num('I', M), char_to_num('K', M)  # I -> K
+    x2, y2 = char_to_num('O', M), char_to_num('J', M)  # O -> J
+    
+    a2, b2 = solve_affine_key(x1, y1, x2, y2, M)
+    if a2 is not None and b2 is not None:
+        plaintext2 = affine_decrypt(ciphertext2, a2, b2, M)
+        print("\nSecond ciphertext:")
+        print(f"Key: a={a2}, b={b2}")
+        print(f"Decrypted: {plaintext2}")
+    else:
+        print("Failed to solve for the second key.")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel5.py
+================================================================================
+
+#5. Egy jpg kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg az eredeti képet és a rejtjelezéshez használt kulcsot az összes kulcs kipróbálásának módszerével, tudva azt, hogy egy jpg első két bájtja 0xFF, 0xD8.
+import os
+import sys
+from math import gcd
+
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        return None
+    else:
+        return x % m
+
+def decrypt_byte(c, a, b, m=256):
+    """Decrypt a single byte using affine cipher"""
+    a_inv = modinv(a, m)
+    if a_inv is None:
+        return None
+    return (a_inv * (c - b)) % m
+
+def decrypt_file(input_file, output_file, a, b):
+    """Decrypt file encrypted with Affine-256 cipher"""
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    decrypted = bytearray()
+    for byte in data:
+        dec_byte = decrypt_byte(byte, a, b)
+        if dec_byte is None:
+            return False  # Invalid key
+        decrypted.append(dec_byte)
+    
+    with open(output_file, 'wb') as f:
+        f.write(decrypted)
+    
+    return True
+
+def is_valid_jpg(first_two_bytes):
+    """Check if the first two bytes match the JPG signature"""
+    return first_two_bytes[0] == 0xFF and first_two_bytes[1] == 0xD8
+
+def brute_force_affine256(input_file):
+    """Try all possible valid keys for Affine-256 and check for JPG signature"""
+    with open(input_file, 'rb') as f:
+        encrypted_data = f.read()
+    
+    if len(encrypted_data) < 2:
+        print("Input file too small")
+        return None
+    
+    # First two bytes of the encrypted file
+    c1, c2 = encrypted_data[0], encrypted_data[1]
+    
+    # Known plaintext: first two bytes of a JPG file
+    p1, p2 = 0xFF, 0xD8
+    
+    # Modulus
+    m = 256
+    
+    valid_keys = []
+    
+    # Try all possible values of 'a' (must be coprime with 256)
+    for a in range(1, m):
+        if gcd(a, m) == 1:  # Check if 'a' is coprime with 256
+            a_inv = modinv(a, m)
+            
+            # Try to deduce 'b' using the first known plaintext
+            b = (c1 - a * p1) % m
+            
+            # Check if this key correctly decrypts the second byte
+            if (a * p2 + b) % m == c2:
+                valid_keys.append((a, b))
+    
+    return valid_keys
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python fel5.py <encrypted_jpg_file>")
+        return
+    
+    input_file = sys.argv[1]
+    if not os.path.exists(input_file):
+        print(f"File not found: {input_file}")
+        return
+    
+    print(f"Searching for valid Affine-256 keys for {input_file}...")
+    valid_keys = brute_force_affine256(input_file)
+    
+    if not valid_keys:
+        print("No valid keys found.")
+        return
+    
+    print(f"Found {len(valid_keys)} potential keys: {valid_keys}")
+    
+    # Try each key and save the decrypted file
+    for i, (a, b) in enumerate(valid_keys):
+        output_file = f"decrypted_{i+1}.jpg"
+        print(f"Trying key (a={a}, b={b}) -> {output_file}")
+        
+        if decrypt_file(input_file, output_file, a, b):
+            print(f"Successfully decrypted with key (a={a}, b={b}) to {output_file}")
+        else:
+            print(f"Failed to decrypt with key (a={a}, b={b})")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel6.py
+================================================================================
+
+#6. A jpg kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg az eredeti képet tudva, hogy a rejtjelezéshez használt kulcs (a, b) = (113, 223).
+import os
+import sys
+
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        return None
+    else:
+        return x % m
+
+def decrypt_byte(c, a, b, m=256):
+    """Decrypt a single byte using affine cipher"""
+    a_inv = modinv(a, m)
+    if a_inv is None:
+        return None
+    return (a_inv * (c - b)) % m
+
+def decrypt_file(input_file, output_file, a, b):
+    """Decrypt file encrypted with Affine-256 cipher"""
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    decrypted = bytearray()
+    for byte in data:
+        dec_byte = decrypt_byte(byte, a, b)
+        if dec_byte is None:
+            return False  # Invalid key
+        decrypted.append(dec_byte)
+    
+    with open(output_file, 'wb') as f:
+        f.write(decrypted)
+    
+    return True
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python fel6.py <encrypted_jpg_file> [output_file]")
+        return
+    
+    input_file = sys.argv[1]
+    if not os.path.exists(input_file):
+        print(f"File not found: {input_file}")
+        return
+    
+    # Use provided output file name or create default
+    output_file = sys.argv[2] if len(sys.argv) > 2 else "decrypted.jpg"
+    
+    # Known key (a, b) = (113, 223)
+    a, b = 113, 223
+    
+    print(f"Decrypting {input_file} with key (a={a}, b={b})...")
+    
+    if decrypt_file(input_file, output_file, a, b):
+        print(f"Successfully decrypted to {output_file}")
+    else:
+        print("Decryption failed. Invalid key.")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor2/fel7.py
+================================================================================
+
+#7. A bmp kép Affin-256 módszerrel volt rejtjelezve, ahol a titkosítást a bájtok felett végeztük. Határozzuk meg rejtjelezéshez használt kulcsot, illetve az eredeti képet tudva, hogy 0xFF rejtjele 0x30, illetve 0x00 rejtjele 0x77 (ismert nyílt szövegű támadás / known plaintext attack).
+import os
+import sys
+
+def extended_gcd(a, b):
+    """Extended Euclidean algorithm for finding GCD and Bézout coefficients"""
+    if a == 0:
+        return b, 0, 1
+    
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    
+    return gcd, x, y
+
+def modinv(a, m):
+    """Find modular multiplicative inverse of a mod m"""
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        return None
+    else:
+        return x % m
+
+def solve_affine_key(p1, c1, p2, c2, m):
+    """
+    Solve the congruence system to find affine key (a,b):
+    p1 * a + b ≡ c1 (mod m)
+    p2 * a + b ≡ c2 (mod m)
+    """
+    # Subtract the equations to eliminate b
+    # (p1 - p2) * a ≡ (c1 - c2) (mod m)
+    diff_p = (p1 - p2) % m
+    diff_c = (c1 - c2) % m
+    
+    # Find modular inverse of diff_p
+    diff_p_inv = modinv(diff_p, m)
+    if diff_p_inv is None:
+        return None, None  # If no inverse exists
+    
+    # Compute a
+    a = (diff_c * diff_p_inv) % m
+    
+    # Compute b using the first equation
+    b = (c1 - a * p1) % m
+    
+    return a, b
+
+def decrypt_byte(c, a, b, m=256):
+    """Decrypt a single byte using affine cipher"""
+    a_inv = modinv(a, m)
+    if a_inv is None:
+        return None
+    return (a_inv * (c - b)) % m
+
+def decrypt_file(input_file, output_file, a, b):
+    """Decrypt file encrypted with Affine-256 cipher"""
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    decrypted = bytearray()
+    for byte in data:
+        dec_byte = decrypt_byte(byte, a, b)
+        if dec_byte is None:
+            return False  # Invalid key
+        decrypted.append(dec_byte)
+    
+    with open(output_file, 'wb') as f:
+        f.write(decrypted)
+    
+    return True
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python fel7.py <encrypted_bmp_file> [output_file]")
+        return
+    
+    input_file = sys.argv[1]
+    if not os.path.exists(input_file):
+        print(f"File not found: {input_file}")
+        return
+    
+    # Use provided output file name or create default
+    output_file = sys.argv[2] if len(sys.argv) > 2 else "decrypted.bmp"
+    
+    # Known plaintext: 0xFF maps to 0x30, 0x00 maps to 0x77
+    p1, c1 = 0xFF, 0x30  # 0xFF -> 0x30
+    p2, c2 = 0x00, 0x77  # 0x00 -> 0x77
+    m = 256             # Modulus
+    
+    # Find the key
+    a, b = solve_affine_key(p1, c1, p2, c2, m)
+    
+    if a is None or b is None:
+        print("Failed to determine the key. No valid solution found.")
+        return
+    
+    print(f"Found key: (a={a}, b={b})")
+    
+    # Verify the key
+    print(f"Verification: {p1} -> {(a * p1 + b) % m}, expected {c1}")
+    print(f"Verification: {p2} -> {(a * p2 + b) % m}, expected {c2}")
+    
+    # Decrypt the file
+    print(f"Decrypting {input_file} with key (a={a}, b={b})...")
+    
+    if decrypt_file(input_file, output_file, a, b):
+        print(f"Successfully decrypted to {output_file}")
+    else:
+        print("Decryption failed. Invalid key.")
+
+if __name__ == "__main__":
+    main() 
+
+================================================================================
+File: Labor3/fel1.py
+================================================================================
+
+#1. Írjunk programot, mely Hill módszerrel titkosít és visszafejt egy tetszőleges szövegállományt
+import math
+import random
+import sympy as sp
+import sys
+import os
+
+def keyGen(n, MOD):
+    while True:
+        key = sp.Matrix([[random.randint(0, MOD-1) for i in range(n)]for j in range(n)])
+        det = key.det() % MOD
+        if math.gcd(det, MOD) != 1:
+            i = random.randint(0, n-1)
+            j = random.randint(0, n-1)
+            key[i, j] = random.randint(0,MOD-1)
+        else: break
+    
+    keyInv = key.inv_mod(MOD)
+    return key, keyInv
+
+def text_to_matrix(text, n, MOD):
+    # Pad the text if necessary
+    if len(text) % n != 0:
+        text += ' ' * (n - len(text) % n)
+    
+    # Convert text to matrix
+    blocks = []
+    for i in range(0, len(text), n):
+        block = sp.Matrix([[ord(text[i+j]) % MOD] for j in range(n)])
+        blocks.append(block)
+    
+    return blocks
+
+def bytes_to_matrix(data, n, MOD):
+    if len(data) % n != 0:
+        raise Exception("Input not sized correctly")
+    blocks = []
+    for i in range(0, len(data), n):
+        block = sp.Matrix([[data[i+j] % MOD] for j in range(n)])
+        blocks.append(block)
+    return blocks
+
+def matrix_to_text(matrices, MOD):
+    text = ""
+    for matrix in matrices:
+        for i in range(matrix.rows):
+            text += chr(int(matrix[i, 0]) % MOD)
+    
+    return text
+
+def encrypt_file(input_file, output_file, key, n, MOD):
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            text = f.read()
+        
+        # Convert text to matrix blocks
+        blocks = text_to_matrix(text, n, MOD)
+        
+        # Encrypt each block
+        encrypted_blocks = []
+        for block in blocks:
+            encrypted_block = (key * block) % MOD
+            encrypted_blocks.append(encrypted_block)
+        
+        # Save encrypted data
+        with open(output_file, 'wb') as f:
+            for block in encrypted_blocks:
+                for i in range(block.rows):
+                    f.write(int(block[i, 0]).to_bytes(1, 'little'))
+        
+        print(f"File encrypted successfully: {output_file}")
+    
+    except Exception as e:
+        print(f"Error encrypting file: {e}")
+
+def decrypt_file(input_file, output_file, key_inv, n, MOD):
+    try:
+        with open(input_file, 'rb') as f:
+            text = f.read()
+        
+        # Convert encrypted text to matrix blocks
+        blocks = bytes_to_matrix(text, n, MOD)
+        
+        # Decrypt each block
+        decrypted_blocks = []
+        for block in blocks:
+            decrypted_block = (key_inv * block) % MOD
+            decrypted_blocks.append(decrypted_block)
+        
+        # Save decrypted data
+        with open(output_file, 'w', encoding='utf-8') as f:
+            decrypted_text = matrix_to_text(decrypted_blocks, MOD)
+            f.write(decrypted_text)
+        
+        print(f"File decrypted successfully: {output_file}")
+    
+    except Exception as e:
+        print(f"Error decrypting file: {e}")
+
+def main():
+    # Parameters
+    n = 3      # Matrix size
+    MOD = 256  # Use 256 for ASCII encoding
+    
+    # Generate key
+    key, key_inv = keyGen(n, MOD)
+    print("Key generated successfully")
+    
+    # Menu
+    while True:
+        print("\nHill Cipher Menu:")
+        print("1. Encrypt a file")
+        print("2. Decrypt a file")
+        print("3. Exit")
+        choice = input("Choose an option (1-3): ")
+        
+        if choice == '1':
+            input_file = input("Enter input file path: ")
+            output_file = input("Enter output file path: ")
+            encrypt_file(input_file, output_file, key, n, MOD)
+        
+        elif choice == '2':
+            input_file = input("Enter input file path: ")
+            output_file = input("Enter output file path: ")
+            decrypt_file(input_file, output_file, key_inv, n, MOD)
+        
+        elif choice == '3':
+            print("Exiting...")
+            break
+        
+        else:
+            print("Invalid option. Please try again.")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+File: Labor3/fel2.py
+================================================================================
+
+#2. Az alábbi titkosított szöveg Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást az angol ábécé 26 betűje felett végezték Határozzuk meg az eredeti szöveget, tudva, hogy a rejtjelezéshez használt kulcs: (6, 13, 7, 8).
+#AOGWEPOFKHSVRWYUKDAZKVYYNGYPQFKAWROZIEATIYROLMYYOSNRLIACOFJAGIUT
+import numpy as np
+
+def modular_inverse(a, m):
+    """Calculate the modular multiplicative inverse of a modulo m."""
+    for i in range(1, m):
+        if (a * i) % m == 1:
+            return i
+    return None
+
+def matrix_modular_inverse(matrix, modulus):
+    """Calculate the modular multiplicative inverse of a 2x2 matrix."""
+    det = int(np.round(np.linalg.det(matrix))) % modulus
+    
+    # Find modular multiplicative inverse of determinant
+    det_inv = modular_inverse(det, modulus)
+    
+    if det_inv is None:
+        raise ValueError("Matrix is not invertible in Z_{}".format(modulus))
+    
+    # For a 2x2 matrix [[a,b],[c,d]], the adjugate is [[d,-b],[-c,a]]
+    adjugate = np.array([
+        [matrix[1,1], -matrix[0,1]],
+        [-matrix[1,0], matrix[0,0]]
+    ])
+    
+    # Ensure positive values for mod operation
+    adjugate = (adjugate % modulus + modulus) % modulus
+    
+    # Multiply adjugate by det_inv
+    inverse = (adjugate * det_inv) % modulus
+    
+    return inverse
+
+def hill_decrypt(ciphertext, key_matrix, modulus=26):
+    """Decrypt a Hill cipher with block size 2."""
+    # Remove any whitespace
+    ciphertext = ciphertext.strip()
+    
+    # Convert key matrix to numpy array
+    key_matrix = np.array(key_matrix).reshape(2, 2)
+    
+    # Calculate inverse key matrix
+    inverse_key = matrix_modular_inverse(key_matrix, modulus)
+    
+    # Convert ciphertext to numerical values (A=0, B=1, ..., Z=25)
+    cipher_nums = [ord(c) - ord('A') for c in ciphertext]
+    
+    # Decrypt in blocks of 2
+    plain_nums = []
+    for i in range(0, len(cipher_nums), 2):
+        if i+1 < len(cipher_nums):
+            # Get a block of 2 characters
+            block = np.array([cipher_nums[i], cipher_nums[i+1]])
+            
+            # Multiply by inverse key matrix
+            decrypted_block = np.dot(inverse_key, block) % modulus
+            
+            # Add to plaintext
+            plain_nums.extend(decrypted_block)
+    
+    # Convert numerical values back to letters
+    plaintext = ''.join([chr(num + ord('A')) for num in plain_nums])
+    
+    return plaintext
+
+# Given information
+ciphertext = "AOGWEPOFKHSVRWYUKDAZKVYYNGYPQFKAWROZIEATIYROLMYYOSNRLIACOFJAGIUT"
+key = [6, 13, 7, 8]  # Key matrix: [[6, 13], [7, 8]]
+
+# Decrypt the ciphertext
+plaintext = hill_decrypt(ciphertext, key)
+print(f"Ciphertext: {ciphertext}")
+print(f"Plaintext: {plaintext}")
+
+
+================================================================================
+File: Labor3/fel3.py
+================================================================================
+
+#3. A következő titkosított szöveg az outHill.txt állományban van, Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást az angol ábécé 26 kis betűje plusz a szóköz felett végezték (mod 27-el kell számolni!!). Tudva azt, hogy az "pu"-nak "oa" és "or"-nek "we" a rejtjele határozzuk meg az eredeti szöveget.
+import re
+
+def char_to_num(c):
+    return 26 if c == ' ' else ord(c) - ord('a')
+
+def num_to_char(n):
+    return ' ' if n % 27 == 26 else chr(n % 27 + ord('a'))
+
+def mod_inverse(a, m):
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return None
+
+def matrix_inv_2x2(m, mod=27):
+    det = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) % mod
+    det_inv = mod_inverse(det, mod)
+    return [
+        [(m[1][1] * det_inv) % mod, (-m[0][1] * det_inv) % mod],
+        [(-m[1][0] * det_inv) % mod, (m[0][0] * det_inv) % mod]
+    ]
+
+def matrix_mul(A, B, mod=27):
+    return [
+        [sum((A[i][k] * B[k][j]) % mod for k in range(len(B))) % mod
+         for j in range(len(B[0]))]
+        for i in range(len(A))
+    ]
+
+def decrypt_hill(ciphertext, key_matrix, mod=27):
+    ciphertext = re.sub(r'[^a-z ]', '', ciphertext.lower())
+    if len(ciphertext) % 2:
+        ciphertext += 'x'
+
+    num_text = [char_to_num(c) for c in ciphertext]
+    plaintext = ""
+
+    for i in range(0, len(num_text), 2):
+        block = [[num_text[i]], [num_text[i+1]]]
+        dec_block = matrix_mul(key_matrix, block, mod)
+        plaintext += num_to_char(dec_block[0][0]) + num_to_char(dec_block[1][0])
+
+    return plaintext
+
+if __name__ == "__main__":
+    plain_pairs, cipher_pairs = ["pu", "or"], ["oa", "we"]
+
+    P = [
+        [char_to_num(plain_pairs[0][0]), char_to_num(plain_pairs[1][0])],
+        [char_to_num(plain_pairs[0][1]), char_to_num(plain_pairs[1][1])]
+    ]
+
+    C = [
+        [char_to_num(cipher_pairs[0][0]), char_to_num(cipher_pairs[1][0])],
+        [char_to_num(cipher_pairs[0][1]), char_to_num(cipher_pairs[1][1])]
+    ]
+
+    K = matrix_mul(C, matrix_inv_2x2(P))
+    K_inv = matrix_inv_2x2(K)
+
+    print("Decryption matrix (K^-1):", K_inv)
+    try:
+        with open("outHill.txt", "r") as file:
+            cyphertext = file.read().strip()
+            plaintext = decrypt_hill(cyphertext, K_inv)
+            print("Decrypted text:", plaintext)
+    except FileNotFoundError:
+        print("File not found. Please ensure 'outHill.txt' exists in the current directory.")
+
+
+================================================================================
+File: Labor3/fel4.py
+================================================================================
+
+#4. A titkosított állomány Hill módszerrel volt rejtjelezve, ahol a blokk méret d = 2 és a titkosítást a bájtok felett végezték (mod 256-al kell számolni!!). Tudva azt, hogy az "0x28 0x03"-nek "0x09 0xb7" és "0xff 0xd9"-nek "0xac 0xfb" a rejtjele határozzuk meg az eredeti jpeg állományt.
+import numpy as np
+
+def mod_inverse(a, m):
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return None
+
+def matrix_mod_inverse(matrix, mod):
+    det = int((matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]) % mod)
+    det_inv = mod_inverse(det, mod)
+
+    result = np.zeros((2, 2), dtype=int)
+    result[0, 0] = (matrix[1, 1] * det_inv) % mod
+    result[0, 1] = ((-matrix[0, 1]) * det_inv) % mod
+    result[1, 0] = ((-matrix[1, 0]) * det_inv) % mod
+    result[1, 1] = (matrix[0, 0] * det_inv) % mod
+    return result
+
+# Known plaintext-ciphertext pairs
+p1, c1 = [0x28, 0x03], [0x09, 0xb7]
+p2, c2 = [0xff, 0xd9], [0xac, 0xfb]
+
+# Create matrices and find encryption key
+P = np.array([[p1[0], p2[0]], [p1[1], p2[1]]])
+C = np.array([[c1[0], c2[0]], [c1[1], c2[1]]])
+P_inv = matrix_mod_inverse(P, 256)
+
+K = np.zeros((2, 2), dtype=int)
+for i in range(2):
+    for j in range(2):
+        K[i, j] = sum((C[i, k] * P_inv[k, j]) % 256 for k in range(2)) % 256
+
+# Get decryption key
+K_inv = matrix_mod_inverse(K, 256)
+print(f"K =\n{K}\nK^-1 =\n{K_inv}")
+
+# Decrypt file
+with open("cryptHill", 'rb') as f:
+    data = f.read()
+
+result = bytearray()
+for i in range(0, len(data), 2):
+    if i + 1 < len(data):
+        c = [data[i], data[i+1]]
+        p = [
+            (K_inv[0, 0] * c[0] + K_inv[0, 1] * c[1]) % 256,
+            (K_inv[1, 0] * c[0] + K_inv[1, 1] * c[1]) % 256
+        ]
+        result.extend(p)
+
+with open("decryptedHill.jpg", 'wb') as f:
+    f.write(result)
+
+print("Decryption complete.")
+
+
+================================================================================
+File: Labor3/fel5.py
+================================================================================
+
+#5. Írjunk programot, amely titkosít és visszafejt egy tetszőleges bináris állományt, ahol blokkonként a Hill-256 titkosítót alkalmazzuk, ahol tetszőlegesen lehessen blokkméretet változtatni, és oldjuk meg az utolsó blokk paddingolását, a PKCS#7 padding módot alkalmazva.
+import numpy as np
+from numpy.linalg import inv, det
+
+def generate_key_matrix(size):
+    while True:
+        key = np.random.randint(0, 256, (size, size), dtype=np.int32)
+        if np.gcd(int(round(det(key))) % 256, 256) == 1:
+            return key
+
+def encrypt_decrypt(input_file, output_file, key, block_size, encrypt=True):
+    with open(input_file, 'rb') as f:
+        data = f.read()
+
+    result = bytearray()
+    if encrypt:
+        # Add PKCS#7 padding
+        pad_len = block_size - (len(data) % block_size)
+        if pad_len == block_size:
+            pad_len = 0
+        data = data + bytes([pad_len] * pad_len)
+        matrix = key
+    else:
+        # Calculate inverse matrix for decryption
+        d = int(round(det(key))) % 256
+        d_inv = pow(d, -1, 256)
+        matrix = (np.round(inv(key) * det(key)).astype(np.int32) % 256 * d_inv) % 256
+
+    # Process blocks
+    for i in range(0, len(data), block_size):
+        block = np.array([b for b in data[i:i+block_size]], dtype=np.int32)
+        processed = np.dot(matrix, block) % 256
+        result.extend(processed.astype(np.uint8))
+
+    # Remove padding if decrypting
+    if not encrypt:
+        pad_len = result[-1]
+        result = result[:-pad_len]
+
+    with open(output_file, 'wb') as f:
+        f.write(result)
+
+if __name__ == "__main__":
+    block_size = 4
+    key = generate_key_matrix(block_size)
+    encrypt_decrypt("cryptHill", "encryptedHill.jpg", key, block_size, encrypt=True)
+    encrypt_decrypt("encryptedHill.jpg", "decryptedHill.jpg", key, block_size, encrypt=False)
+
+
+================================================================================
+File: Labor4/create_test_files.py
+================================================================================
+
+import os
+import random
+
+def create_binary_file(filename: str, size_mb: int):
+    with open(filename, 'wb') as f:
+        f.write(os.urandom(size_mb * 1024 * 1024))
+
+if __name__ == "__main__":
+    sizes = [1, 5, 10]  # MB
+    for i, size in enumerate(sizes, 1):
+        create_binary_file(f"test{i}.bin", size) 
+
+================================================================================
+File: Labor4/fel1.py
+================================================================================
+
+import base64
+import time
+from typing import Tuple
+
+class RC4:
+    def __init__(self, key: bytes):
+        self.S = list(range(256))
+        j = 0
+        for i in range(256):
+            j = (j + self.S[i] + key[i % len(key)]) % 256
+            self.S[i], self.S[j] = self.S[j], self.S[i]
+        self.i = 0
+        self.j = 0
+
+    def _prga(self) -> int:
+        self.i = (self.i + 1) % 256
+        self.j = (self.j + self.S[self.i]) % 256
+        self.S[self.i], self.S[self.j] = self.S[self.j], self.S[self.i]
+        return self.S[(self.S[self.i] + self.S[self.j]) % 256]
+
+    def process(self, data: bytes) -> bytes:
+        # Skip first 1024 bytes
+        for _ in range(1024):
+            self._prga()
+        
+        result = bytearray()
+        for byte in data:
+            result.append(byte ^ self._prga())
+        return bytes(result)
+
+def read_key(key_file: str) -> bytes:
+    with open(key_file, 'r') as f:
+        key_b64 = f.read().strip()
+        return base64.b64decode(key_b64)
+
+def process_file(input_file: str, output_file: str, key_file: str, encrypt: bool = True) -> Tuple[float, int]:
+    key = read_key(key_file)
+    rc4 = RC4(key)
+    
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    start_time = time.time()
+    processed_data = rc4.process(data)
+    end_time = time.time()
+    
+    with open(output_file, 'wb') as f:
+        f.write(processed_data)
+    
+    return end_time - start_time, len(data)
+
+def main():
+    key_file = "key.txt"
+    test_files = ["test1.bin", "test2.bin", "test3.bin"]
+    
+    print("File Size (bytes)\tEncryption Time (s)\tDecryption Time (s)")
+    print("-" * 60)
+    
+    for test_file in test_files:
+        encrypted_file = f"encrypted_{test_file}"
+        decrypted_file = f"decrypted_{test_file}"
+        
+        enc_time, file_size = process_file(test_file, encrypted_file, key_file, True)
+        dec_time, _ = process_file(encrypted_file, decrypted_file, key_file, False)
+        
+        print(f"{file_size}\t\t{enc_time:.6f}\t\t{dec_time:.6f}")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor4/fel2.py
+================================================================================
+
+import os
+
+def xor_bytes(a, b):
+    return bytes(x ^ y for x, y in zip(a, b))
+
+def decrypt_otp(encrypted_file, known_encrypted, known_plain):
+    with open(encrypted_file, 'rb') as f:
+        encrypted = f.read()
+    
+    with open(known_encrypted, 'rb') as f:
+        known_enc = f.read()
+    
+    with open(known_plain, 'rb') as f:
+        known_plain = f.read()
+    
+    # Get the key by XORing known plaintext with known ciphertext
+    key = xor_bytes(known_plain, known_enc)
+    
+    # Decrypt the target file using the key
+    decrypted = xor_bytes(encrypted, key)
+    
+    # Save the decrypted content
+    output_file = os.path.splitext(encrypted_file)[0] + '_decrypted.docx'
+    with open(output_file, 'wb') as f:
+        f.write(decrypted)
+    
+    return output_file
+
+if __name__ == '__main__':
+    encrypted_file = 'cryptHB (2)'  # The encrypted docx file
+    known_encrypted = 'cryptOTP_Massag (1)'  # The encrypted jpg
+    known_plain = 'OTP_Massag (1).jpg'  # The original jpg
+    
+    decrypted_file = decrypt_otp(encrypted_file, known_encrypted, known_plain)
+    print(f"Decrypted file saved as: {decrypted_file}")
+
+
+================================================================================
+File: Labor4/fel3.py
+================================================================================
+
+def decrypt_otp(encrypted_file, output_file):
+    with open(encrypted_file, 'rb') as f:
+        encrypted_data = f.read()
+    
+    # Known plaintext: <!DOCTYPE html>\n
+    known_plaintext = b'<!DOCTYPE html>\n'
+    
+    # Get first 16 bytes of encrypted data
+    first_16_bytes = encrypted_data[:16]
+    
+    # Calculate key by XORing known plaintext with encrypted data
+    key = bytes([a ^ b for a, b in zip(first_16_bytes, known_plaintext)])
+    
+    # Decrypt the entire file
+    decrypted_data = bytearray()
+    for i, byte in enumerate(encrypted_data):
+        decrypted_data.append(byte ^ key[i % 16])
+    
+    # Write decrypted data to output file
+    with open(output_file, 'wb') as f:
+        f.write(decrypted_data)
+
+if __name__ == "__main__":
+    encrypted_file = "cryptOTP"  # Replace with your encrypted file name
+    output_file = "decrypted.html"
+    decrypt_otp(encrypted_file, output_file)
+
+
+================================================================================
+File: Labor4/fel4.py
+================================================================================
+
+import time
+import numpy as np
+
+class A51:
+    def __init__(self, key):
+        self.key = key
+        self.reg1 = [0] * 19
+        self.reg2 = [0] * 22
+        self.reg3 = [0] * 23
+        
+        # Initialize registers with key
+        for i in range(64):
+            bit = (key >> i) & 1
+            self.reg1[0] = bit
+            self.reg2[0] = bit
+            self.reg3[0] = bit
+            self._clock_all()
+    
+    def _clock(self, reg, size, tap1, tap2):
+        feedback = reg[tap1] ^ reg[tap2]
+        reg.pop()
+        reg.insert(0, feedback)
+        return reg[0]
+    
+    def _clock_all(self):
+        # Clock each register
+        bit1 = self._clock(self.reg1, 19, 8, 13)
+        bit2 = self._clock(self.reg2, 22, 10, 20)
+        bit3 = self._clock(self.reg3, 23, 10, 21)
+        
+        # Majority function
+        majority = (bit1 & bit2) ^ (bit1 & bit3) ^ (bit2 & bit3)
+        
+        # Clock registers based on majority
+        if bit1 == majority:
+            self._clock(self.reg1, 19, 8, 13)
+        if bit2 == majority:
+            self._clock(self.reg2, 22, 10, 20)
+        if bit3 == majority:
+            self._clock(self.reg3, 23, 10, 21)
+    
+    def get_next_bit(self):
+        self._clock_all()
+        return self.reg1[0] ^ self.reg2[0] ^ self.reg3[0]
+
+def encrypt_file(input_file, output_file, key):
+    start_time = time.time()
+    
+    a51 = A51(key)
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        while True:
+            byte = f_in.read(1)
+            if not byte:
+                break
+            encrypted_byte = 0
+            for i in range(8):
+                encrypted_byte |= (a51.get_next_bit() << i)
+            f_out.write(bytes([encrypted_byte ^ byte[0]]))
+    
+    return time.time() - start_time
+
+def decrypt_file(input_file, output_file, key):
+    # Decryption is the same as encryption
+    return encrypt_file(input_file, output_file, key)
+
+def test_performance(file_sizes):
+    key = 0x1234567890ABCDEF
+    results = []
+    
+    for size in file_sizes:
+        # Create test file
+        test_data = np.random.bytes(size)
+        with open('test.bin', 'wb') as f:
+            f.write(test_data)
+        
+        # Measure encryption
+        enc_time = encrypt_file('test.bin', 'encrypted.bin', key)
+        
+        # Measure decryption
+        dec_time = decrypt_file('encrypted.bin', 'decrypted.bin', key)
+        
+        results.append((size, enc_time, dec_time))
+        
+        # Clean up
+        import os
+        os.remove('test.bin')
+        os.remove('encrypted.bin')
+        os.remove('decrypted.bin')
+    
+    return results
+
+if __name__ == "__main__":
+    # Test with different file sizes
+    file_sizes = [1024, 10240, 102400, 1024000]  # 1KB, 10KB, 100KB, 1MB
+    results = test_performance(file_sizes)
+    
+    print("File Size\tEncryption Time\tDecryption Time")
+    print("--------------------------------------------")
+    for size, enc_time, dec_time in results:
+        print(f"{size/1024:.1f} KB\t{enc_time:.4f} s\t{dec_time:.4f} s")
+
+
+================================================================================
+File: Labor4/fel5.py
+================================================================================
+
+def xor_32bit(a, b):
+    return a ^ b
+
+def derive_keystream(pt_pairs, ct_pairs):
+    return [xor_32bit(a, b) for a, b in zip(pt_pairs, ct_pairs)]
+
+def decrypt_lfsr(ct, keystream):
+    plaintext = bytearray()
+    keystream_bytes = b''.join(k.to_bytes(4, 'big') for k in keystream)
+    keystream_length = len(keystream_bytes)
+
+    for i in range(len(ct)):
+        plaintext.append(xor_32bit(ct[i], keystream_bytes[i % keystream_length]))
+
+    return bytes(plaintext)
+
+def main():
+    pt_pairs = [0xe0ffd8ff, 0x464a1000]    
+    ct_pairs = [0x880006b0, 0xde683e80]
+
+    keystream = derive_keystream(pt_pairs, ct_pairs)
+
+    encrypted_file = 'cryptLFSR'
+    decrypted_file = 'decrypted.jpg'
+
+    with open(encrypted_file, 'rb') as f:
+        ct = f.read()
+
+    plaintext = decrypt_lfsr(ct, keystream)
+
+    with open(decrypted_file, 'wb') as f:
+        f.write(plaintext)
+
+if __name__ == '__main__':
+    main()
+
+
+================================================================================
+File: Labor4/fel6.py
+================================================================================
+
+import time
+import sys
+
+class LFSR16:
+    def __init__(self, key):
+        self.state = key & 0xFFFF
+        self.taps = 0xB400  # x^16 + x^14 + x^13 + x^11 + 1
+
+    def next_bit(self):
+        feedback = 0
+        for i in range(16):
+            if (self.taps >> i) & 1:
+                feedback ^= (self.state >> i) & 1
+        self.state = ((self.state << 1) | feedback) & 0xFFFF
+        return feedback
+
+    def generate_byte(self):
+        byte = 0
+        for i in range(8):
+            byte = (byte << 1) | self.next_bit()
+        return byte
+
+def read_key_from_file(filename):
+    with open(filename, 'r') as f:
+        key_hex = f.read().strip()
+        return int(key_hex, 16)
+
+def process_file(input_file, output_file, key_file, encrypt=True):
+    key = read_key_from_file(key_file)
+    lfsr = LFSR16(key)
+    
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        while True:
+            byte = f_in.read(1)
+            if not byte:
+                break
+            lfsr_byte = lfsr.generate_byte()
+            result_byte = bytes([byte[0] ^ lfsr_byte])
+            f_out.write(result_byte)
+
+def main():
+    if len(sys.argv) != 5:
+        print("Usage: python fel6.py <input_file> <output_file> <key_file> <encrypt/decrypt>")
+        return
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    key_file = sys.argv[3]
+    mode = sys.argv[4].lower()
+
+    if mode not in ['encrypt', 'decrypt']:
+        print("Mode must be either 'encrypt' or 'decrypt'")
+        return
+
+    start_time = time.time()
+    process_file(input_file, output_file, key_file, mode == 'encrypt')
+    end_time = time.time()
+
+    print(f"Processing time: {end_time - start_time:.4f} seconds")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor4/fel7.py
+================================================================================
+
+from base64 import b64decode
+from Crypto.Cipher import ChaCha20_Poly1305
+
+def verify_authenticity():
+    with open('poly1305.txt', 'r') as file:
+        lines = file.readlines()
+        
+    for i in range(0, len(lines), 4):
+        if i + 3 >= len(lines):
+            break
+            
+        key = bytearray.fromhex(lines[i].strip())
+        nonce = bytearray.fromhex(lines[i+1].strip())
+        ciphertext = bytearray.fromhex(lines[i+2].strip())
+        tag = bytearray.fromhex(lines[i+3].strip())
+        
+        try:
+            cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce)
+            cipher.decrypt_and_verify(ciphertext, tag)
+            print(f"Message {i//4 + 1}: Authentic")
+        except (ValueError, KeyError):
+            print(f"Message {i//4 + 1}: Not authentic")
+
+if __name__ == "__main__":
+    verify_authenticity()
+
+
+================================================================================
+File: Labor5/fel1.py
+================================================================================
+
+#1. A crypt.bmp állomány TEA-ECB módban volt titkosítva, úgy hogy az állomány első 80 bájtját nem titkosítottuk, és a kulcs értéke: 0x0123, 0x4567, 0x89ab, 0xcdef. Fejtsük vissza, majd az eredeti állományt titkosítsuk CBC módban
+import struct
+import os
+
+def tea_decrypt(v, k):
+    v0, v1 = v
+    k0, k1, k2, k3 = k
+    delta = 0x9e3779b9
+    sum = (delta * 32) & 0xFFFFFFFF
+    
+    for i in range(32):
+        v1 = (v1 - (((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3))) & 0xFFFFFFFF
+        v0 = (v0 - (((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1))) & 0xFFFFFFFF
+        sum = (sum - delta) & 0xFFFFFFFF
+    
+    return v0, v1
+
+def tea_encrypt(v, k):
+    v0, v1 = v
+    k0, k1, k2, k3 = k
+    delta = 0x9e3779b9
+    sum = 0
+    
+    for i in range(32):
+        sum = (sum + delta) & 0xFFFFFFFF
+        v0 = (v0 + (((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1))) & 0xFFFFFFFF
+        v1 = (v1 + (((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3))) & 0xFFFFFFFF
+    
+    return v0, v1
+
+def process_file(input_file, output_file, key, mode='decrypt'):
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    # Keep first 80 bytes unchanged
+    header = data[:80]
+    data = data[80:]
+    
+    # Process in 8-byte blocks
+    blocks = [data[i:i+8] for i in range(0, len(data), 8)]
+    processed_blocks = []
+    
+    if mode == 'decrypt':
+        for block in blocks:
+            if len(block) < 8:
+                processed_blocks.append(block)
+                continue
+            v0, v1 = struct.unpack('>II', block)
+            v0, v1 = tea_decrypt((v0, v1), key)
+            processed_blocks.append(struct.pack('>II', v0, v1))
+    else:  # CBC encrypt
+        iv = (0x00000000, 0x00000000)  # Initialization vector
+        prev_block = iv
+        for block in blocks:
+            if len(block) < 8:
+                processed_blocks.append(block)
+                continue
+            v0, v1 = struct.unpack('>II', block)
+            # XOR with previous ciphertext
+            v0 ^= prev_block[0]
+            v1 ^= prev_block[1]
+            v0, v1 = tea_encrypt((v0, v1), key)
+            processed_blocks.append(struct.pack('>II', v0, v1))
+            prev_block = (v0, v1)
+    
+    with open(output_file, 'wb') as f:
+        f.write(header)
+        f.write(b''.join(processed_blocks))
+
+# Key: 0x0123, 0x4567, 0x89ab, 0xcdef
+key = (0x0123, 0x4567, 0x89ab, 0xcdef)
+
+# First decrypt the file
+process_file('crypt.bmp', 'decrypted.bmp', key, 'decrypt')
+
+# Then encrypt in CBC mode
+process_file('decrypted.bmp', 'encrypted_cbc.bmp', key, 'encrypt')
+
+
+================================================================================
+File: Labor5/fel2.py
+================================================================================
+
+#2. Titkosítsunk és fejtsünk vissza egy tetszőleges bináris állományt, rendre DES3-CBC, DES3-CTR, AES-CBC, AES-CTR módban, használva az általunk kiválasztott programozási nyelvhez megírt crypto könyvtárcsomagot. Forráskódok: bináris állomány titkosítása, visszafejtése a Blowfish-CBC algoritmussal Python, OpenSSL, Crypto++, Java.
+from Crypto.Cipher import DES3, AES
+from Crypto.Random import get_random_bytes
+import os
+
+CHUNK_SIZE = 1024  # 1KB chunks
+
+def encrypt_file(input_file, output_file, cipher_type, mode, key, iv=None, nonce=None):
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        if cipher_type == 'DES3':
+            if mode == DES3.MODE_CTR:
+                cipher = DES3.new(key, mode, nonce=nonce)
+            else:
+                cipher = DES3.new(key, mode, iv=iv)
+        else:  # AES
+            if mode == AES.MODE_CTR:
+                cipher = AES.new(key, mode, nonce=nonce)
+            else:
+                cipher = AES.new(key, mode, iv=iv)
+        
+        while True:
+            chunk = f_in.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            encrypted_chunk = cipher.encrypt(chunk)
+            f_out.write(encrypted_chunk)
+
+def decrypt_file(input_file, output_file, cipher_type, mode, key, iv=None, nonce=None):
+    with open(input_file, 'rb') as f_in, open(output_file, 'wb') as f_out:
+        if cipher_type == 'DES3':
+            if mode == DES3.MODE_CTR:
+                cipher = DES3.new(key, mode, nonce=nonce)
+            else:
+                cipher = DES3.new(key, mode, iv=iv)
+        else:  # AES
+            if mode == AES.MODE_CTR:
+                cipher = AES.new(key, mode, nonce=nonce)
+            else:
+                cipher = AES.new(key, mode, iv=iv)
+        
+        while True:
+            chunk = f_in.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            decrypted_chunk = cipher.decrypt(chunk)
+            f_out.write(decrypted_chunk)
+
+# Test the functions
+input_file = "decrypted.bmp"
+output_enc = "encrypted.bmp"
+output_dec = "decrypted.bmp"
+
+# Generate random keys and IVs
+des3_key = get_random_bytes(24)  # 24 bytes for DES3
+aes_key = get_random_bytes(32)   # 32 bytes for AES-256
+des3_iv = get_random_bytes(8)    # 8 bytes IV for DES3
+aes_iv = get_random_bytes(16)    # 16 bytes IV for AES
+des3_nonce = get_random_bytes(2) # 7 bytes nonce for DES3 CTR
+aes_nonce = get_random_bytes(2)  # 8 bytes nonce for AES CTR
+
+# Test DES3-CBC
+encrypt_file(input_file, output_enc, 'DES3', DES3.MODE_CBC, des3_key, des3_iv)
+decrypt_file(output_enc, output_dec, 'DES3', DES3.MODE_CBC, des3_key, des3_iv)
+
+# Test DES3-CTR
+encrypt_file(input_file, output_enc, 'DES3', DES3.MODE_CTR, des3_key, nonce=des3_nonce)
+decrypt_file(output_enc, output_dec, 'DES3', DES3.MODE_CTR, des3_key, nonce=des3_nonce)
+
+# Test AES-CBC
+encrypt_file(input_file, output_enc, 'AES', AES.MODE_CBC, aes_key, aes_iv)
+decrypt_file(output_enc, output_dec, 'AES', AES.MODE_CBC, aes_key, aes_iv)
+
+# Test AES-CTR
+encrypt_file(input_file, output_enc, 'AES', AES.MODE_CTR, aes_key, nonce=aes_nonce)
+decrypt_file(output_enc, output_dec, 'AES', AES.MODE_CTR, aes_key, nonce=aes_nonce)        
+
+================================================================================
+File: Labor5/fel3.py
+================================================================================
+
+#3. Titkosítsunk és fejtsünk vissza egy tetszőleges bináris állományt, TEA-CBC, vagy TEA-CTR módban, ahol az alkalmazott kulcsot véletlenszerűen generáljuk.
+import os
+import struct
+import random
+import sys
+
+def generate_key():
+    return [random.getrandbits(32) for _ in range(4)]
+
+def tea_encrypt(block, key):
+    v0, v1 = struct.unpack('>2I', block)
+    delta = 0x9e3779b9
+    sum_val = 0
+    for _ in range(32):
+        sum_val = (sum_val + delta) & 0xFFFFFFFF
+        v0 = (v0 + (((v1 << 4) + key[0]) ^ (v1 + sum_val) ^ ((v1 >> 5) + key[1]))) & 0xFFFFFFFF
+        v1 = (v1 + (((v0 << 4) + key[2]) ^ (v0 + sum_val) ^ ((v0 >> 5) + key[3]))) & 0xFFFFFFFF
+    return struct.pack('>2I', v0, v1)
+
+def tea_decrypt(block, key):
+    v0, v1 = struct.unpack('>2I', block)
+    delta = 0x9e3779b9
+    sum_val = (delta * 32) & 0xFFFFFFFF
+    for _ in range(32):
+        v1 = (v1 - (((v0 << 4) + key[2]) ^ (v0 + sum_val) ^ ((v0 >> 5) + key[3]))) & 0xFFFFFFFF
+        v0 = (v0 - (((v1 << 4) + key[0]) ^ (v1 + sum_val) ^ ((v1 >> 5) + key[1]))) & 0xFFFFFFFF
+        sum_val = (sum_val - delta) & 0xFFFFFFFF
+    return struct.pack('>2I', v0, v1)
+
+def xor_bytes(a, b):
+    return bytes(x ^ y for x, y in zip(a, b))
+
+def pad_data(data):
+    padding_length = 8 - (len(data) % 8)
+    return data + bytes([padding_length] * padding_length)
+
+def unpad_data(data):
+    padding_length = data[-1]
+    return data[:-padding_length]
+
+def encrypt_file(input_file, output_file, mode='CBC'):
+    key = generate_key()
+    iv = os.urandom(8)
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    padded_data = pad_data(data)
+    encrypted_data = b''
+    if mode == 'CBC':
+        prev_block = iv
+        for i in range(0, len(padded_data), 8):
+            block = padded_data[i:i+8]
+            xored_block = xor_bytes(block, prev_block)
+            encrypted_block = tea_encrypt(xored_block, key)
+            encrypted_data += encrypted_block
+            prev_block = encrypted_block
+    elif mode == 'CTR':
+        counter = 0
+        for i in range(0, len(padded_data), 8):
+            block = padded_data[i:i+8]
+            counter_block = struct.pack('>Q', counter)
+            encrypted_counter = tea_encrypt(counter_block, key)
+            encrypted_block = xor_bytes(block, encrypted_counter)
+            encrypted_data += encrypted_block
+            counter += 1
+    with open(output_file, 'wb') as f:
+        f.write(struct.pack('>I', len(key)))
+        for k in key:
+            f.write(struct.pack('>I', k))
+        f.write(iv)
+        f.write(encrypted_data)
+
+def decrypt_file(input_file, output_file, mode='CBC'):
+    with open(input_file, 'rb') as f:
+        key_length = struct.unpack('>I', f.read(4))[0]
+        key = [struct.unpack('>I', f.read(4))[0] for _ in range(key_length)]
+        iv = f.read(8)
+        encrypted_data = f.read()
+    decrypted_data = b''
+    if mode == 'CBC':
+        prev_block = iv
+        for i in range(0, len(encrypted_data), 8):
+            block = encrypted_data[i:i+8]
+            decrypted_block = tea_decrypt(block, key)
+            xored_block = xor_bytes(decrypted_block, prev_block)
+            decrypted_data += xored_block
+            prev_block = block
+    elif mode == 'CTR':
+        counter = 0
+        for i in range(0, len(encrypted_data), 8):
+            block = encrypted_data[i:i+8]
+            counter_block = struct.pack('>Q', counter)
+            encrypted_counter = tea_encrypt(counter_block, key)
+            decrypted_block = xor_bytes(block, encrypted_counter)
+            decrypted_data += decrypted_block
+            counter += 1
+    unpadded_data = unpad_data(decrypted_data)
+    with open(output_file, 'wb') as f:
+        f.write(unpadded_data)
+
+if __name__ == '__main__':
+    if len(sys.argv) != 5:
+        print('Usage: python fel3.py <encrypt/decrypt> <input_file> <output_file> <CBC/CTR>')
+        sys.exit(1)
+    mode = sys.argv[4].upper()
+    if sys.argv[1] == 'encrypt':
+        encrypt_file(sys.argv[2], sys.argv[3], mode)
+    elif sys.argv[1] == 'decrypt':
+        decrypt_file(sys.argv[2], sys.argv[3], mode)
+
+
+================================================================================
+File: Labor5/fel4.py
+================================================================================
+
+#4. Egy jpg állomány CBC blokk-titkosító módszert alkalmazva, affine, mod 256 titkosítóval volt titkosítva. Határozzuk meg az eredeti jpg állományt, a jpg titkosított értéke alapján, tudva, hogy az IV értéke (19), a titkosító kulcs pedig (157, 45).
+import numpy as np
+from PIL import Image
+
+def affine_decrypt(c, a, b):
+    a_inv = pow(a, -1, 256)
+    return (a_inv * (c - b)) % 256
+
+def cbc_decrypt(encrypted_data, a, b, iv):
+    decrypted = bytearray()
+    prev_block = iv
+    
+    for i in range(0, len(encrypted_data)):
+        current_block = encrypted_data[i]
+        decrypted_byte = affine_decrypt(current_block, a, b)
+        plain_byte = decrypted_byte ^ prev_block
+        decrypted.append(plain_byte)
+        prev_block = current_block
+    
+    return bytes(decrypted)
+
+def decrypt_image(input_path, output_path, a, b, iv):
+    with open(input_path, 'rb') as f:
+        encrypted_data = f.read()
+    
+    decrypted_data = cbc_decrypt(encrypted_data, a, b, iv)
+    
+    with open(output_path, 'wb') as f:
+        f.write(decrypted_data)
+
+# Parameters
+a = 157
+b = 45
+iv = 19
+
+# Decrypt the image
+decrypt_image('cryptAffine256_Tanacs', 'decrypted.jpg', a, b, iv)
+
+
+================================================================================
+File: Labor5/fel5.py
+================================================================================
+
+#5. Egy jpg állomány CBC blokk-titkosító módszert alkalmazva, Hill, mod 256 titkosítóval volt titkosítva. Határozzuk meg az eredeti jpg állományt, a jpg titkosított értéke alapján, ismerve a titkosító kulcsot, illetve tudva azt, hogy az IV értéke a titkosított állomány utolsó négy bájtjára van beírva
+import numpy as np
+from PIL import Image
+
+def load_key(key_file):
+    with open(key_file, 'r') as f:
+        size = int(f.readline().strip())
+        key = []
+        for _ in range(size):
+            row = list(map(int, f.readline().strip().split()))
+            key.append(row)
+        return key
+
+def hill_decrypt(block, key):
+    key_matrix = np.array(key, dtype=np.int32)
+    key_inv = np.linalg.inv(key_matrix)
+    det = int(round(np.linalg.det(key_matrix)))
+    det_inv = pow(det, -1, 256)
+    key_inv = (key_inv * det * det_inv) % 256
+    key_inv = key_inv.astype(np.int32)
+    result = np.dot(block.astype(np.int32), key_inv) % 256
+    return result.astype(np.uint8)
+
+def cbc_decrypt(encrypted_data, key, block_size=4):
+    # Get IV from last block
+    iv = encrypted_data[-block_size:]
+    encrypted_data = encrypted_data[:-block_size]
+    
+    if len(encrypted_data) % block_size != 0:
+        pad_length = block_size - (len(encrypted_data) % block_size)
+        encrypted_data = encrypted_data + b'\x00' * pad_length
+    
+    decrypted_data = bytearray()
+    prev_cipher = iv
+    
+    # Process each block
+    for i in range(0, len(encrypted_data), block_size):
+        current_cipher = encrypted_data[i:i+block_size]
+        block = np.frombuffer(current_cipher, dtype=np.uint8)
+        
+        # Hill decrypt
+        decrypted = hill_decrypt(block, key)
+        
+        # XOR with previous cipher block
+        prev_block = np.frombuffer(prev_cipher, dtype=np.uint8)
+        plaintext = np.bitwise_xor(decrypted, prev_block)
+        
+        decrypted_data.extend(plaintext)
+        prev_cipher = current_cipher
+    
+    return bytes(decrypted_data)
+
+def decrypt_jpg(encrypted_file, key_file, output_file):
+    key = load_key(key_file)
+    with open(encrypted_file, 'rb') as f:
+        encrypted_data = f.read()
+    
+    decrypted_data = cbc_decrypt(encrypted_data, key)
+    
+    with open(output_file, 'wb') as f:
+        f.write(decrypted_data)
+
+# Decrypt the file
+decrypt_jpg('cryptHillCBC_Ikrek', 'keyHillCBC.txt', 'decrypted_5.jpg')
+
+
+================================================================================
+File: Labor5/fel6.py
+================================================================================
+
+#6. Egy gif állomány CBC blokk-titkosító módszert alkalmazva, Hill, mod 256 titkosítóval volt titkosítva, két betünkét. Határozzuk meg az eredeti gif állományt a titkosított állomány alapján, tudva, hogy az IV értéke (129, 131), a titkosító kulcs pedig (27, 131, 22, 101).
+import numpy as np
+from PIL import Image
+import io
+
+# Main parameters
+key = np.array([[27, 131], [22, 101]])
+key_inv = np.array([[1, 57], [162,127]])
+iv = (129, 131)
+
+def decrypt_block(cb, pb):
+    cb = [int(c) for c in cb]
+    pb = [int(p) for p in pb]
+
+    decrypted = np.dot(key_inv, cb) % 256
+    plain = [int(decrypted[0]) ^ pb[0], int(decrypted[1]) ^ pb[1]]
+    return bytes(plain)
+
+def decrypt_gif(encrypted_data):
+    blocks = [encrypted_data[i:i+2] for i in range(0, len(encrypted_data), 2)]
+    plain = bytearray()
+
+    prev = iv
+    for cb in blocks:
+        if len(cb) == 1:
+            cb += bytes([0])
+        decrypted = decrypt_block(cb, prev)
+        plain.extend(decrypted)
+        prev = cb
+    return bytes(plain)
+
+# Decrypt the GIF file
+with open('cryptHillCBC_TheCircleIsComplete', 'rb') as f:
+    encrypted_data = f.read()
+
+decrypted_data = decrypt_gif(encrypted_data)
+
+with open('decrypted.gif', 'wb') as f:
+    f.write(decrypted_data)
+
+================================================================================
+File: Labor5/fel7.py
+================================================================================
+
+#7. Hasonlítsuk össze a Salsa20 és AES-256 titkosítók időigényét.
+import time
+import os
+from Crypto.Cipher import Salsa20, AES
+
+def measure_salsa20(data_size, iterations=100):
+    total_time = 0
+    for _ in range(iterations):
+        key = os.urandom(32)
+        nonce = os.urandom(8)
+        data = os.urandom(data_size)
+        
+        start_time = time.time()
+        cipher = Salsa20.new(key=key, nonce=nonce)
+        encrypted = cipher.encrypt(data)
+        end_time = time.time()
+        
+        total_time += (end_time - start_time)
+    
+    return total_time / iterations
+
+def measure_aes256(data_size, iterations=100):
+    total_time = 0
+    for _ in range(iterations):
+        key = os.urandom(32)
+        iv = os.urandom(16)
+        data = os.urandom(data_size)
+        
+        start_time = time.time()
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        # Pad data to be multiple of 16 bytes
+        padding_length = 16 - (len(data) % 16)
+        padded_data = data + bytes([padding_length]) * padding_length
+        encrypted = cipher.encrypt(padded_data)
+        end_time = time.time()
+        
+        total_time += (end_time - start_time)
+    
+    return total_time / iterations
+
+def compare_algorithms():
+    data_sizes = [1024, 10240, 102400, 1024000]  # Different data sizes in bytes
+    iterations = 100
+    
+    print("Comparing Salsa20 and AES-256 encryption performance")
+    print("-" * 50)
+    print(f"{'Data Size (bytes)':20} {'Salsa20 (ms)':15} {'AES-256 (ms)':15} {'Ratio (AES/Salsa)':20}")
+    print("-" * 50)
+    
+    for size in data_sizes:
+        salsa_time = measure_salsa20(size, iterations) * 1000  # Convert to ms
+        aes_time = measure_aes256(size, iterations) * 1000  # Convert to ms
+        ratio = aes_time / salsa_time if salsa_time > 0 else 0
+        
+        print(f"{size:20} {salsa_time:.6f}ms {aes_time:.6f}ms {ratio:.6f}")
+    
+    print("-" * 50)
+
+if __name__ == "__main__":
+    compare_algorithms()
+
+
+================================================================================
+File: Labor6/fel1.py
+================================================================================
+
+#1. A PasswdSHA256.txt állományban személyek nevei és jelszavaiknak hash értéke található. A hash értékek az SHA3-256-os hash függvényt alkalmazva voltak létrehozva. Határozzuk meg melyek azok a személyek, amelyeknek ugyanaz a jelszava.
+import json
+
+# Read the password file
+with open('PasswdSHA256.txt', 'r') as f:
+    lines = f.readlines()
+
+# Parse the data and organize by password hash
+users_by_hash = {}
+for line in lines:
+    if line.strip():  # Skip empty lines
+        user_data = eval(line.strip())  # Parse the dictionary
+        name = user_data['name']
+        password_hash = user_data['password']
+        
+        if password_hash in users_by_hash:
+            users_by_hash[password_hash].append(name)
+        else:
+            users_by_hash[password_hash] = [name]
+
+# Find and display users with the same password
+print("Users with the same password:")
+for password_hash, users in users_by_hash.items():
+    if len(users) > 1:
+        print(f"These users have the same password:")
+        for user in users:
+            print(f"  - {user}")
+        print()
+
+
+================================================================================
+File: Labor6/fel2.py
+================================================================================
+
+#2. A PasswdSHA256.json állományban személyek nevei és jelszavaiknak hash értéke található. A hash értékek az SHA3-256-os hash függvényt alkalmazva voltak létrehozva. Tudva, hogy néhány személy jelszava a leggyakrabban használt jelszavak közül került ki, határozzuk meg ezeket a személyeket, illetve a jelszavaikat. A leggyakrabban használt jelszavakat a 10-million-password-list-top-10000.txt állományban találjuk.
+import json
+import hashlib
+import base64
+
+# Load password hashes
+with open('PasswdSHA256.json', 'r') as f:
+    users = json.load(f)
+
+# Load common passwords
+with open('10-million-password-list-top-10000.txt', 'r') as f:
+    common_passwords = [line.strip() for line in f.readlines()]
+
+# Function to hash a password using SHA3-256
+def hash_password(password):
+    hash_obj = hashlib.sha3_256(password.encode())
+    return base64.b64encode(hash_obj.digest()).decode()
+
+# Check each common password against all user hashes
+found_users = []
+
+for password in common_passwords:
+    hashed_password = hash_password(password)
+    
+    for user in users:
+        if user["password"] == hashed_password:
+            found_users.append({
+                "name": user["name"],
+                "password": password
+            })
+
+# Print results
+print("Users with common passwords:")
+for user in found_users:
+    print(f"{user['name']}: {user['password']}")
+
+
+================================================================================
+File: Labor6/fel3.py
+================================================================================
+
+#3. A PasswdSHA256Salt.json állományban személyek nevei, jelszavaiknak hash értéke és a megfelelő salt értékek találhatók. A hash értékek a Python hashlib.pbkdf2_hmac kulcs deriváló függvényével voltak létrehozva, ahol az alkalmazott hash függvény az SHA3-256-os volt és az iterációszám csak 1000-re volt állítva. Tudva, hogy néhány személyeknek jelszava a leggyakrabban használt jelszavak közül került ki, határozzuk meg ezeket a személyeket, illetve a jelszavaikat. A leggyakrabban használt jelszavakat a 10-million-password-list-top-10000.txt állományban találjuk.
+import json
+import hashlib
+import base64
+
+# Load the password hashes and salts
+with open('PasswdSHA256Salt.json', 'r') as f:
+    users = json.load(f)
+
+# Load the common passwords list
+with open('10-million-password-list-top-10000.txt', 'r') as f:
+    common_passwords = [line.strip() for line in f.readlines()]
+
+# Find users with common passwords
+found_users = []
+
+for user in users:
+    name = user['name']
+    stored_password_hash = base64.b64decode(user['password'])
+    salt = base64.b64decode(user['salt'])
+    
+    for password in common_passwords:
+        # Calculate hash using the same parameters as mentioned in the task
+        password_bytes = password.encode('utf-8')
+        calculated_hash = hashlib.pbkdf2_hmac(
+            'sha3_256',  # using SHA3-256
+            password_bytes,
+            salt,
+            1000,        # iteration count
+            len(stored_password_hash)
+        )
+        
+        # Compare the calculated hash with the stored hash
+        if calculated_hash == stored_password_hash:
+            found_users.append({
+                "name": name,
+                "password": password
+            })
+            print(f"Found password for {name}: {password}")
+            break
+
+print(f"\nTotal users with common passwords found: {len(found_users)}")
+for user in found_users:
+    print(f"{user['name']}: {user['password']}")
+
+
+================================================================================
+File: Labor6/fel4.py
+================================================================================
+
+#4. Az előző feladatnál, akiknek sikerült a jelszavát feltörni, azok esetében végezzük el a következőket: mentsük ki egy json állományba a személyek nevét, a jelszavak hashértékét, és a salt-ot, de most az iterációszámot állítsuk legalább 1000000-re. Sikerül-e ebben az esetben is feltörni a jelszavakat?
+import json
+import hashlib
+import base64
+
+# Load the password hashes and salts
+with open('PasswdSHA256Salt.json', 'r') as f:
+    users = json.load(f)
+
+# Load the cracked passwords from exercise 3
+# For this, we'll rerun a simplified version of exercise 3
+with open('10-million-password-list-top-10000.txt', 'r') as f:
+    common_passwords = [line.strip() for line in f.readlines()]
+
+# Find users with common passwords
+cracked_users = []
+
+for user in users:
+    name = user['name']
+    stored_password_hash = base64.b64decode(user['password'])
+    salt = base64.b64decode(user['salt'])
+    
+    for password in common_passwords:
+        # Calculate hash using the same parameters as in exercise 3
+        password_bytes = password.encode('utf-8')
+        calculated_hash = hashlib.pbkdf2_hmac(
+            'sha3_256',
+            password_bytes,
+            salt,
+            1000,
+            len(stored_password_hash)
+        )
+        
+        # Compare the calculated hash with the stored hash
+        if calculated_hash == stored_password_hash:
+            cracked_users.append({
+                "name": name,
+                "password": password,
+                "salt": user['salt']
+            })
+            print(f"Found password for {name}: {password}")
+            break
+
+# Now create a new JSON with the cracked passwords but using 1,000,000 iterations
+secure_users = []
+
+for user in cracked_users:
+    name = user['name']
+    password = user['password']
+    salt = user['salt']
+    salt_bytes = base64.b64decode(salt)
+    
+    # Calculate the new hash with 1,000,000 iterations
+    password_bytes = password.encode('utf-8')
+    new_hash = hashlib.pbkdf2_hmac(
+        'sha3_256',
+        password_bytes,
+        salt_bytes,
+        1000000,  # High iteration count
+        32  # Output size in bytes
+    )
+    
+    secure_users.append({
+        "name": name,
+        "password": base64.b64encode(new_hash).decode('utf-8'),
+        "salt": salt
+    })
+
+# Save the new secure hashes to a JSON file
+with open('SecurePasswdSHA256Salt.json', 'w') as f:
+    json.dump(secure_users, f, indent=4)
+
+print(f"\nExported {len(secure_users)} secure password hashes to SecurePasswdSHA256Salt.json")
+
+# Now try to crack these passwords with the high iteration count
+# Warning: This will be extremely slow due to the high iteration count
+print("\nAttempting to crack passwords with 1,000,000 iterations (this will be very slow)...")
+
+# For demonstration, we'll just try to crack the first user with a few passwords
+if secure_users:
+    first_user = secure_users[0]
+    name = first_user['name']
+    stored_password_hash = base64.b64decode(first_user['password'])
+    salt = base64.b64decode(first_user['salt'])
+    
+    # We'll only try the first few passwords to demonstrate
+    for password in common_passwords[:10]:
+        print(f"Trying password: {password}")
+        password_bytes = password.encode('utf-8')
+        calculated_hash = hashlib.pbkdf2_hmac(
+            'sha3_256',
+            password_bytes,
+            salt,
+            1000000,  # High iteration count
+            len(stored_password_hash)
+        )
+        
+        if calculated_hash == stored_password_hash:
+            print(f"Found password for {name}: {password}")
+            break
+    else:
+        print(f"Password not found in the first 10 attempts. Full cracking would take a very long time.")
+
+print("\nConclusion: With 1,000,000 iterations, cracking passwords becomes computationally expensive")
+print("and may not be feasible with regular hardware in a reasonable timeframe.")
+
+
+================================================================================
+File: Labor6/fel5.py
+================================================================================
+
+#5. Az előző feladatnál, akiknek sikerült a jelszavát feltörni, azok esetében végezzük el a következőket: mentsük ki egy json állományba a személyek nevét, a jelszavak hashértékét, és a salt-ot, de most a jelszavak hash értékét az scrypt-el vagy bcrypt-el hozzuk létre (scrypt/bcrypt). Sikerül-e ebben az esetben is feltörni a jelszavakat?
+import json
+import hashlib
+import base64
+import bcrypt
+import time
+
+# Load the password hashes and salts from previous task
+with open('PasswdSHA256Salt.json', 'r') as f:
+    users = json.load(f)
+
+# Load common passwords list
+with open('10-million-password-list-top-10000.txt', 'r') as f:
+    common_passwords = [line.strip() for line in f.readlines()]
+
+# Find users with common passwords (reusing code from fel4.py)
+cracked_users = []
+
+for user in users:
+    name = user['name']
+    stored_password_hash = base64.b64decode(user['password'])
+    salt = base64.b64decode(user['salt'])
+    
+    for password in common_passwords:
+        # Calculate hash using the same parameters
+        password_bytes = password.encode('utf-8')
+        calculated_hash = hashlib.pbkdf2_hmac(
+            'sha3_256',
+            password_bytes,
+            salt,
+            1000,
+            len(stored_password_hash)
+        )
+        
+        # Compare the calculated hash with the stored hash
+        if calculated_hash == stored_password_hash:
+            cracked_users.append({
+                "name": name,
+                "password": password,
+                "salt": user['salt']
+            })
+            print(f"Found password for {name}: {password}")
+            break
+
+# Create a new JSON with bcrypt hashes for cracked users
+bcrypt_users = []
+
+for user in cracked_users:
+    name = user['name']
+    password = user['password']
+    
+    # bcrypt generates its own salt, but we'll store the original salt as well
+    password_bytes = password.encode('utf-8')
+    bcrypt_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt(12))
+    
+    bcrypt_users.append({
+        "name": name,
+        "password": bcrypt_hash.decode('utf-8'),
+        "salt": user['salt']  # Original salt kept for reference
+    })
+
+# Save the bcrypt hashes to a JSON file
+with open('BcryptPasswords.json', 'w') as f:
+    json.dump(bcrypt_users, f, indent=4)
+
+print(f"\nExported {len(bcrypt_users)} bcrypt password hashes to BcryptPasswords.json")
+
+# Now try to crack these bcrypt passwords
+print("\nAttempting to crack bcrypt passwords...")
+
+# Only cracking the first user for demonstration
+if bcrypt_users:
+    first_user = bcrypt_users[0]
+    name = first_user['name']
+    stored_bcrypt_hash = first_user['password'].encode('utf-8')
+    
+    # Track timing for cracking attempt
+    start_time = time.time()
+    found = False
+    
+    # Try the first 100 passwords (to avoid very long runtime)
+    max_attempts = 100
+    for i, password in enumerate(common_passwords[:max_attempts]):
+        if i % 10 == 0:
+            print(f"Trying password {i+1}/{max_attempts}...")
+            
+        password_bytes = password.encode('utf-8')
+        if bcrypt.checkpw(password_bytes, stored_bcrypt_hash):
+            end_time = time.time()
+            print(f"Found password for {name}: {password}")
+            print(f"Time taken: {end_time - start_time:.2f} seconds")
+            found = True
+            break
+    
+    if not found:
+        end_time = time.time()
+        print(f"Password not found in {max_attempts} attempts.")
+        print(f"Time taken for {max_attempts} attempts: {end_time - start_time:.2f} seconds")
+        
+        # Extrapolate how long it would take to check all 10,000 passwords
+        time_per_password = (end_time - start_time) / max_attempts
+        total_estimated_time = time_per_password * 10000
+        print(f"Estimated time to check all 10,000 passwords: {total_estimated_time:.2f} seconds")
+        print(f"({total_estimated_time/60:.2f} minutes or {total_estimated_time/3600:.2f} hours)")
+
+print("\nConclusion: bcrypt is designed to be slow and resistant to brute force attacks.")
+print("It includes work factor parameter that can be increased as hardware gets faster.")
+print("This makes password cracking significantly more time-consuming and resource-intensive.")
+
+
+================================================================================
+File: Labor6/fel6.py
+================================================================================
+
+#6. Titkosítsunk és fejtsünk vissza egy bináris állományt, AES-GCM titkosítást alkalmazva, ahol a nonce és kulcs értékeket generáljuk véletlenszerűen. A titkosítás során az állomány elejére írjuk be a nonce értékét, majd a végére a hitelesítő tag-et. Visszafejtéskor elenőrzizzük le azt is, hogy nem-e módosult az állomány tartalma. A generált kulcsot írjuk ki egy szövegállományba base64-es alakba. Hogyan járunk el ha az állományt csak részenként tudjk beolvasni, ha a teljes tartalom nem fér el a memóriában?
+import os
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+def generate_key():
+    return AESGCM.generate_key(bit_length=256)
+
+def generate_nonce():
+    return os.urandom(12)  # 96 bits is recommended for GCM
+
+def encrypt_file(input_file, output_file, key_file):
+    # Generate random key and nonce
+    key = generate_key()
+    nonce = generate_nonce()
+    
+    # Save key to file in base64 format
+    with open(key_file, 'wb') as f:
+        f.write(base64.b64encode(key))
+    
+    # Initialize AESGCM with the key
+    aesgcm = AESGCM(key)
+    
+    # Process file in chunks (for large files)
+    chunk_size = 1024 * 1024  # 1MB chunks
+    
+    with open(input_file, 'rb') as in_file:
+        # Read entire file content
+        data = in_file.read()
+    
+    # Encrypt data
+    ciphertext = aesgcm.encrypt(nonce, data, None)
+    
+    # Write to output file: nonce + ciphertext + tag (tag is included in ciphertext from cryptography library)
+    with open(output_file, 'wb') as out_file:
+        out_file.write(nonce)
+        out_file.write(ciphertext)
+
+def encrypt_large_file(input_file, output_file, key_file):
+    # Generate random key and nonce
+    key = generate_key()
+    nonce = generate_nonce()
+    
+    # Save key to file in base64 format
+    with open(key_file, 'wb') as f:
+        f.write(base64.b64encode(key))
+    
+    # Initialize AESGCM with the key
+    aesgcm = AESGCM(key)
+    
+    # For large files, we need to use a different approach
+    # Read the file in chunks, concatenate, then encrypt
+    # This is because GCM requires the entire message for authentication
+    
+    # First, get file size
+    file_size = os.path.getsize(input_file)
+    
+    # Buffer for the whole file data (not ideal for very large files)
+    # For truly huge files, we would need streaming AEAD which GCM doesn't support directly
+    all_data = bytearray()
+    
+    # Read input file in chunks
+    with open(input_file, 'rb') as in_file:
+        chunk = in_file.read(1024 * 1024)  # 1MB chunks
+        while chunk:
+            all_data.extend(chunk)
+            chunk = in_file.read(1024 * 1024)
+    
+    # Encrypt all data at once (GCM needs the complete message)
+    ciphertext = aesgcm.encrypt(nonce, all_data, None)
+    
+    # Write output: nonce + ciphertext
+    with open(output_file, 'wb') as out_file:
+        out_file.write(nonce)
+        out_file.write(ciphertext)
+
+def decrypt_file(input_file, output_file, key_file):
+    # Load key from file
+    with open(key_file, 'rb') as f:
+        key = base64.b64decode(f.read())
+    
+    # Initialize AESGCM with the key
+    aesgcm = AESGCM(key)
+    
+    with open(input_file, 'rb') as in_file:
+        # Read nonce (first 12 bytes)
+        nonce = in_file.read(12)
+        
+        # Read the rest (ciphertext + tag)
+        ciphertext = in_file.read()
+    
+    try:
+        # Decrypt and verify
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        
+        # Write decrypted data to output file
+        with open(output_file, 'wb') as out_file:
+            out_file.write(plaintext)
+        
+        return True  # Authentication successful
+    except Exception as e:
+        print(f"Authentication or decryption failed: {e}")
+        return False  # Authentication failed
+
+def decrypt_large_file(input_file, output_file, key_file):
+    # Similar to decrypt_file but reads the ciphertext in chunks
+    # Load key from file
+    with open(key_file, 'rb') as f:
+        key = base64.b64decode(f.read())
+    
+    # Initialize AESGCM with the key
+    aesgcm = AESGCM(key)
+    
+    # First read the nonce
+    with open(input_file, 'rb') as in_file:
+        nonce = in_file.read(12)
+        
+        # Read the rest (ciphertext) in chunks
+        ciphertext = bytearray()
+        chunk = in_file.read(1024 * 1024)  # 1MB chunks
+        while chunk:
+            ciphertext.extend(chunk)
+            chunk = in_file.read(1024 * 1024)
+    
+    try:
+        # Decrypt and verify
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        
+        # Write decrypted data to output file
+        with open(output_file, 'wb') as out_file:
+            out_file.write(plaintext)
+        
+        return True  # Authentication successful
+    except Exception as e:
+        print(f"Authentication or decryption failed: {e}")
+        return False  # Authentication failed
+
+if __name__ == "__main__":
+    # Example usage
+    input_file = "decrypted.jpg"
+    encrypted_file = "encrypted.bin"
+    decrypted_file = "decrypted_6.jpg"
+    key_file = "key.txt"
+    
+    # Check if the file is large (e.g., > 100MB)
+    if os.path.exists(input_file) and os.path.getsize(input_file) > 100 * 1024 * 1024:
+        encrypt_large_file(input_file, encrypted_file, key_file)
+        success = decrypt_large_file(encrypted_file, decrypted_file, key_file)
+    else:
+        encrypt_file(input_file, encrypted_file, key_file)
+        success = decrypt_file(encrypted_file, decrypted_file, key_file)
+    
+    if success:
+        print("File encrypted and decrypted successfully with authentication verified.")
+    else:
+        print("Decryption failed due to authentication error - file may have been tampered with.")
+
+
+================================================================================
+File: Labor6/fel7.py
+================================================================================
+
+#7. Titkosítsunk és fejtsünk vissza egy bináris állományt, ChaCha20-Poly130 titkosítást alkalmazva, ahol a nonce és kulcs értékeket generáljuk véletlenszerűen. A titkosítás során az állomány elejére írjuk be a nonce értékét, majd a végére a hitelesítő tag-et. Visszafejtéskor elenőrzizzük le azt is, hogy nem-e módosult az állomány tartalma. A generált kulcsot írjuk ki egy szövegállományba base64-es alakba. Az előző feladathoz képest jobb-e a futási idő? Hogyan járunk el ha az állományt csak részenként tudjk beolvasni, ha a teljes tartalom nem fér el a memóriában?
+import os
+import time
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+
+def generate_key():
+    return ChaCha20Poly1305.generate_key()
+
+def generate_nonce():
+    return os.urandom(12)  # 12 bytes (96 bits) for ChaCha20Poly1305
+
+def encrypt_file(input_file, output_file, key):
+    # Generate a random nonce
+    nonce = generate_nonce()
+    
+    # Create ChaCha20Poly1305 cipher
+    cipher = ChaCha20Poly1305(key)
+    
+    # Read the input file
+    with open(input_file, 'rb') as f:
+        data = f.read()
+    
+    # Encrypt the data and get the authentication tag
+    encrypted_data = cipher.encrypt(nonce, data, None)
+    
+    # Write the nonce at the beginning, then the encrypted data
+    with open(output_file, 'wb') as f:
+        f.write(nonce)
+        f.write(encrypted_data)
+    
+    # Save the key to a text file in base64 format
+    with open(f"{input_file}.key", 'wb') as f:
+        f.write(base64.b64encode(key))
+
+def decrypt_file(input_file, output_file, key):
+    # Read the encrypted file
+    with open(input_file, 'rb') as f:
+        # Read the nonce (first 12 bytes)
+        nonce = f.read(12)
+        # Read the rest (encrypted data + authentication tag)
+        encrypted_data = f.read()
+    
+    # Create ChaCha20Poly1305 cipher
+    cipher = ChaCha20Poly1305(key)
+    
+    try:
+        # Decrypt the data and verify authentication
+        decrypted_data = cipher.decrypt(nonce, encrypted_data, None)
+        
+        # Write the decrypted data
+        with open(output_file, 'wb') as f:
+            f.write(decrypted_data)
+        
+        return True  # Decryption successful
+    except Exception as e:
+        print(f"Decryption failed: {e}")
+        print("The file may have been tampered with.")
+        return False
+
+def chunked_encrypt_file(input_file, output_file, key, chunk_size=1024*1024):
+    """Encrypt a file in chunks for large files that don't fit in memory"""
+    nonce = generate_nonce()
+    cipher = ChaCha20Poly1305(key)
+    
+    # In chunked mode, we need to process the entire file to get the tag
+    # We'll use the associated data feature for authentication
+    
+    # First read the file in chunks and encrypt each chunk
+    input_size = os.path.getsize(input_file)
+    chunks = []
+    
+    with open(input_file, 'rb') as f:
+        chunk_number = 0
+        while True:
+            chunk = f.read(chunk_size)
+            if not chunk:
+                break
+            
+            # Use chunk number as associated data for each chunk
+            associated_data = str(chunk_number).encode()
+            encrypted_chunk = cipher.encrypt(nonce, chunk, associated_data)
+            chunks.append((encrypted_chunk, associated_data))
+            chunk_number += 1
+    
+    # Write the encrypted file
+    with open(output_file, 'wb') as f:
+        # Write the nonce
+        f.write(nonce)
+        
+        # Write the number of chunks
+        f.write(chunk_number.to_bytes(8, byteorder='big'))
+        
+        # Write each chunk with its length
+        for encrypted_chunk, _ in chunks:
+            chunk_len = len(encrypted_chunk)
+            f.write(chunk_len.to_bytes(8, byteorder='big'))
+            f.write(encrypted_chunk)
+    
+    # Save the key to a text file in base64 format
+    with open(f"{input_file}.key", 'wb') as f:
+        f.write(base64.b64encode(key))
+
+def chunked_decrypt_file(input_file, output_file, key, chunk_size=1024*1024):
+    """Decrypt a file in chunks for large files that don't fit in memory"""
+    
+    with open(input_file, 'rb') as f:
+        # Read the nonce
+        nonce = f.read(12)
+        
+        # Read the number of chunks
+        chunk_count = int.from_bytes(f.read(8), byteorder='big')
+        
+        cipher = ChaCha20Poly1305(key)
+        
+        # Create output file
+        with open(output_file, 'wb') as out_f:
+            for i in range(chunk_count):
+                try:
+                    # Read chunk length
+                    chunk_len = int.from_bytes(f.read(8), byteorder='big')
+                    
+                    # Read encrypted chunk
+                    encrypted_chunk = f.read(chunk_len)
+                    
+                    # Use chunk number as associated data
+                    associated_data = str(i).encode()
+                    
+                    # Decrypt chunk and verify
+                    decrypted_chunk = cipher.decrypt(nonce, encrypted_chunk, associated_data)
+                    
+                    # Write to output
+                    out_f.write(decrypted_chunk)
+                    
+                except Exception as e:
+                    print(f"Decryption failed at chunk {i}: {e}")
+                    print("The file may have been tampered with.")
+                    return False
+    
+    return True
+
+def main():
+    # Select a test file (binary file)
+    input_file = "decrypted.jpg"
+    encrypted_file = "encrypted_file.bin"
+    decrypted_file = "decrypted_file.jpg"
+    
+    # Create a test binary file if it doesn't exist
+    if not os.path.exists(input_file):
+        with open(input_file, 'wb') as f:
+            f.write(os.urandom(1024 * 1024))  # 1MB random data
+    
+    # Generate a key
+    key = generate_key()
+    
+    # Measure encryption time
+    start_time = time.time()
+    encrypt_file(input_file, encrypted_file, key)
+    encryption_time = time.time() - start_time
+    
+    # Measure decryption time
+    start_time = time.time()
+    success = decrypt_file(encrypted_file, decrypted_file, key)
+    decryption_time = time.time() - start_time
+    
+    print(f"Encryption time: {encryption_time:.4f} seconds")
+    print(f"Decryption time: {decryption_time:.4f} seconds")
+    print(f"Decryption successful: {success}")
+    
+    # Verify the decrypted file matches the original
+    with open(input_file, 'rb') as f1, open(decrypted_file, 'rb') as f2:
+        if f1.read() == f2.read():
+            print("File integrity verified - original and decrypted files match")
+        else:
+            print("Error: Files don't match")
+    
+    # Print key in base64 format
+    print(f"Key saved to {input_file}.key")
+    print(f"Key (base64): {base64.b64encode(key).decode()}")
+    
+    # Test file tampering
+    print("\nTesting file tampering detection...")
+    with open(encrypted_file, 'r+b') as f:
+        f.seek(20)  # Skip past the nonce and go into the encrypted data
+        original_byte = f.read(1)
+        f.seek(20)
+        f.write(bytes([original_byte[0] ^ 1]))  # Flip one bit
+    
+    tampered_decrypted = "tampered_decrypted.bin"
+    success = decrypt_file(encrypted_file, tampered_decrypted, key)
+    print(f"Decryption of tampered file successful: {success}")
+    
+    # Test chunked mode for large files
+    print("\nTesting chunked encryption/decryption...")
+    chunked_encrypted = "chunked_encrypted.bin"
+    chunked_decrypted = "chunked_decrypted.bin"
+    
+    start_time = time.time()
+    chunked_encrypt_file(input_file, chunked_encrypted, key, chunk_size=1024*64)
+    chunked_encryption_time = time.time() - start_time
+    
+    start_time = time.time()
+    success = chunked_decrypt_file(chunked_encrypted, chunked_decrypted, key, chunk_size=1024*64)
+    chunked_decryption_time = time.time() - start_time
+    
+    print(f"Chunked encryption time: {chunked_encryption_time:.4f} seconds")
+    print(f"Chunked decryption time: {chunked_decryption_time:.4f} seconds")
+    print(f"Chunked decryption successful: {success}")
+    
+    with open(input_file, 'rb') as f1, open(chunked_decrypted, 'rb') as f2:
+        if f1.read() == f2.read():
+            print("Chunked file integrity verified - original and decrypted files match")
+        else:
+            print("Error: Chunked files don't match")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor7/fel1.py
+================================================================================
+
+#1. Válasszunk két, legalább 1024 bites prímszámot, majd RSA-kulcsként alkalmazva őket titkosítsunk és fejtsünk vissza egy tetszőleges ASCII karaktereket tartalmazó szöveget. A szöveget generáljuk véletlenszerűen, hossza pedig akkor legyen, hogy a szövegnek megfelelő szám kisebb legyen, mint az RSA-modulus. Ugyanazt a szöveget titkosítsuk többször RSA-val, majd RSA-OAEP-vel. A titkosított bájtszekvenciákat hexa formában írjuk ki a képernyőre. A titkosított bájtszekvenciákat megfigyelve mit lehet megállapítani?
+import random
+import string
+import math
+from Crypto.Util.number import getPrime, inverse
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+import binascii
+
+# Generate two random primes of at least 1024 bits
+p = getPrime(1024)
+q = getPrime(1024)
+
+# Calculate modulus and RSA parameters
+n = p * q
+phi = (p - 1) * (q - 1)
+e = 65537  # Common public exponent
+d = inverse(e, phi)  # Private exponent
+
+# Print key information
+print(f"RSA Modulus (n) bit length: {n.bit_length()}")
+
+# Function to generate random text
+def generate_random_text(max_length):
+    # Calculate maximum safe length to ensure the number is smaller than modulus
+    safe_length = (n.bit_length() // 8) - 1
+    length = min(max_length, safe_length)
+    return ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation + ' ') for _ in range(length))
+
+# Plain RSA encryption
+def rsa_encrypt(message):
+    # Convert message to integer
+    m = int.from_bytes(message.encode('ascii'), byteorder='big')
+    # Ensure message is smaller than modulus
+    if m >= n:
+        raise ValueError("Message too long for this key")
+    # Encrypt: c = m^e mod n
+    c = pow(m, e, n)
+    return c
+
+# Plain RSA decryption
+def rsa_decrypt(ciphertext):
+    # Decrypt: m = c^d mod n
+    m = pow(ciphertext, d, n)
+    # Convert integer back to bytes and then to ASCII
+    byte_length = (m.bit_length() + 7) // 8
+    return m.to_bytes(byte_length, byteorder='big').decode('ascii', errors='ignore')
+
+# Create RSA key object for OAEP
+key = RSA.construct((n, e, d, p, q))
+
+# RSA-OAEP encryption
+def rsa_oaep_encrypt(message):
+    cipher = PKCS1_OAEP.new(key)
+    return cipher.encrypt(message.encode('ascii'))
+
+# RSA-OAEP decryption
+def rsa_oaep_decrypt(ciphertext):
+    cipher = PKCS1_OAEP.new(key)
+    return cipher.decrypt(ciphertext).decode('ascii')
+
+# Generate random message (ensuring it's smaller than modulus)
+message = generate_random_text(100)
+print(f"\nOriginal message: {message}")
+
+# Encrypt the message multiple times with plain RSA
+print("\nPlain RSA Encryption (multiple runs):")
+for i in range(3):
+    rsa_encrypted = rsa_encrypt(message)
+    print(f"Run {i+1}: {hex(rsa_encrypted)}")
+    
+    # Verify decryption works
+    if i == 0:
+        decrypted = rsa_decrypt(rsa_encrypted)
+        print(f"Decrypted message: {decrypted}")
+        assert decrypted == message, "RSA decryption failed!"
+
+# Encrypt the message multiple times with RSA-OAEP
+print("\nRSA-OAEP Encryption (multiple runs):")
+for i in range(3):
+    oaep_encrypted = rsa_oaep_encrypt(message)
+    print(f"Run {i+1}: {binascii.hexlify(oaep_encrypted).decode()}")
+    
+    # Verify decryption works
+    if i == 0:
+        decrypted = rsa_oaep_decrypt(oaep_encrypted)
+        print(f"Decrypted message: {decrypted}")
+        assert decrypted == message, "RSA-OAEP decryption failed!"
+
+print("\nObservation: Plain RSA encryption of the same message always produces the same ciphertext,")
+print("while RSA-OAEP produces different ciphertexts each time due to random padding.")
+
+
+================================================================================
+File: Labor7/fel2.py
+================================================================================
+
+# 2. A crypted7_2.png AES-GCM módszerrel volt rejtjelezve. Határozzuk meg az eredeti png filet, ha az AES 32 bájtos kulcs titkosított értékét hexában cryptedAESkey7_2.txt-ben találjuk. Az AES kulcs RSA-OAEP-vel volt titkosítva, ahol az RSA publikus kulcs az RSA_pubKey7_2.pem állományban található.
+# Megjegyzések:
+
+# a további hitelesített bájtszekvencia, a header:
+# AES_GCMEncryption 2025.04.01,
+# a nonce értéke a titkosított állomány első 12 bájtja,
+# a hitelesítő tag pedig a titkosított állomány utolsó 16 bájtja.
+# Útmutatás: faktorizáljuk az RSA publikus kulcs modulusát Fermat módszerével.
+import math
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP, AES
+import binascii
+
+# Function to perform Fermat factorization
+def fermat_factorization(n):
+    a = math.isqrt(n) + 1
+    b2 = a*a - n
+    while not is_perfect_square(b2):
+        a += 1
+        b2 = a*a - n
+    b = math.isqrt(b2)
+    return a + b, a - b
+
+def is_perfect_square(n):
+    root = math.isqrt(n)
+    return root * root == n
+
+# Read encrypted PNG file
+with open('crypted7_2.png', 'rb') as f:
+    encrypted_data = f.read()
+
+# Read encrypted AES key
+with open('cryptedAESkey7_2.txt', 'r') as f:
+    encrypted_aes_key_hex = f.read().strip()
+    encrypted_aes_key = binascii.unhexlify(encrypted_aes_key_hex)
+
+# Read RSA public key
+with open('RSA_pubKey7_2.pem', 'rb') as f:
+    rsa_key = RSA.import_key(f.read())
+
+# Extract RSA public key components
+n = rsa_key.n
+e = rsa_key.e
+
+# Factorize n using Fermat's method
+p, q = fermat_factorization(n)
+
+# Construct the private key
+phi = (p - 1) * (q - 1)
+d = pow(e, -1, phi)
+
+# Create the private key object
+private_key = RSA.construct((n, e, d, p, q))
+
+# Decrypt the AES key using RSA-OAEP
+cipher_rsa = PKCS1_OAEP.new(private_key)
+aes_key = cipher_rsa.decrypt(encrypted_aes_key)
+
+# Extract nonce and tag from encrypted data
+# The nonce is the first 12 bytes and the tag is the last 16 bytes
+nonce = encrypted_data[:12]
+ciphertext = encrypted_data[12:-16]
+tag = encrypted_data[-16:]
+
+# Header for authentication
+header = b"AES_GCMEncryption 2025.04.01"
+
+# Decrypt the file using AES-GCM
+cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
+cipher.update(header)
+plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+
+# Write the decrypted data to a file
+with open('decrypted7_2.png', 'wb') as f:
+    f.write(plaintext)
+
+print("Decryption complete. The decrypted file has been saved as 'decrypted7_2.png'.")
+
+
+================================================================================
+File: Labor7/fel3.py
+================================================================================
+
+#3. Határozzuk meg azt a nyílt szöveget, amelyről tudjuk, hogy három különböző félnek RSA-textbookkal rejtjelezve volt elküldve, ahol a következő linken elérhetőek a felek nyilvános kulcsai, illetve a rejtjelezett szövegek:
+import math
+import decimal
+from functools import reduce
+
+def read_key_file(filename):
+    with open(filename, 'r', encoding='utf-8', errors='ignore') as f:
+        content = f.read().strip()
+        # Assuming the file contains only the n value
+        n = int(content)
+        # For this attack, we know e is 3
+        e = 3
+    return n, e
+
+def read_crypt_file(filename):
+    with open(filename, 'rb') as f:
+        content = f.read()
+        # Try to convert from binary to int
+        return int.from_bytes(content, byteorder='big')
+
+def chinese_remainder_theorem(congruences):
+    # Step 1: Calculate the product of all moduli
+    moduli = [congruence[1] for congruence in congruences]
+    N = reduce(lambda x, y: x * y, moduli)
+    
+    result = 0
+    for a_i, n_i in congruences:
+        # Step 2: Calculate N_i = N / n_i
+        N_i = N // n_i
+        
+        # Step 3: Calculate the modular multiplicative inverse of N_i modulo n_i
+        inv = pow(N_i, -1, n_i)
+        
+        # Step 4: Add to the result
+        result += a_i * N_i * inv
+    
+    # Step 5: Return the result modulo N
+    return result % N
+
+def main():
+    # Read the keys and ciphertexts
+    n1, e1 = read_key_file("key200_1.txt")
+    n2, e2 = read_key_file("key200_2.txt")
+    n3, e3 = read_key_file("key200_3.txt")
+    
+    c1 = read_crypt_file("cryptE3_1")
+    c2 = read_crypt_file("cryptE3_2")
+    c3 = read_crypt_file("cryptE3_3")
+    
+    # Check that all exponents are 3 (required for this attack)
+    if e1 != 3 or e2 != 3 or e3 != 3:
+        print("This attack requires all exponents to be 3")
+        return
+    
+    # Apply Chinese Remainder Theorem
+    congruences = [(c1, n1), (c2, n2), (c3, n3)]
+    x = chinese_remainder_theorem(congruences)
+    
+    # Find the cube root
+    decimal.getcontext().prec = 100
+    nr = math.ceil(pow(x, 1/decimal.Decimal(3)))
+    
+    # Convert to bytes and decode
+    try:
+        plaintext_bytes = nr.to_bytes((nr.bit_length() + 7) // 8, 'big')
+        plaintext = plaintext_bytes.decode('utf-8')
+        print(f"Recovered plaintext: {plaintext}")
+    except Exception as e:
+        print(f"Error decoding plaintext: {e}")
+        print(f"Numeric value: {nr}")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor7/fel4.py
+================================================================================
+
+#4. Az RSA kriptorendszer visszafejtésének időigényét gyorsítani lehet, ha alkalmazzuk a kínai maradéktételt. Alkalmazzuk ezt a gyorsítási folyamatot az RSA-textbook esetében. Írjunk programot, melyben összehasonlítjuk a két visszafejtési algoritmus időigényét.
+import random
+import time
+from math import gcd
+
+def is_prime(n, k=5):
+    """Miller-Rabin primality test"""
+    if n <= 1 or n == 4:
+        return False
+    if n <= 3:
+        return True
+    
+    # Find d such that n-1 = 2^r * d
+    d = n - 1
+    r = 0
+    while d % 2 == 0:
+        d //= 2
+        r += 1
+    
+    # Witness loop
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n)
+        if x == 1 or x == n - 1:
+            continue
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
+
+def generate_prime(bits):
+    """Generate a random prime number with specified bit length"""
+    while True:
+        p = random.getrandbits(bits)
+        # Ensure the number is odd and has the correct bit length
+        p |= (1 << bits - 1) | 1
+        if is_prime(p):
+            return p
+
+def mod_inverse(a, m):
+    """Calculate the modular multiplicative inverse of a mod m"""
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def extended_gcd(a, b):
+    """Extended Euclidean Algorithm"""
+    if a == 0:
+        return b, 0, 1
+    else:
+        gcd, x, y = extended_gcd(b % a, a)
+        return gcd, y - (b // a) * x, x
+
+def generate_keys(bits):
+    """Generate RSA key pair"""
+    # Generate two distinct prime numbers
+    p = generate_prime(bits // 2)
+    q = generate_prime(bits // 2)
+    while p == q:
+        q = generate_prime(bits // 2)
+    
+    n = p * q
+    phi = (p - 1) * (q - 1)
+    
+    # Choose e such that 1 < e < phi and gcd(e, phi) = 1
+    e = 65537  # Common choice for e
+    while gcd(e, phi) != 1:
+        e = random.randrange(2, phi)
+    
+    # Compute d such that (d * e) % phi = 1
+    d = mod_inverse(e, phi)
+    
+    return (n, e), (n, d, p, q)
+
+def rsa_encrypt(message, public_key):
+    """Encrypt a message using RSA"""
+    n, e = public_key
+    # Ensure message is less than n
+    if message >= n:
+        raise ValueError("Message too large for the key size")
+    return pow(message, e, n)
+
+def rsa_decrypt_standard(ciphertext, private_key):
+    """Decrypt a ciphertext using standard RSA"""
+    n, d, _, _ = private_key
+    return pow(ciphertext, d, n)
+
+def rsa_decrypt_crt(ciphertext, private_key):
+    """Decrypt a ciphertext using Chinese Remainder Theorem optimization"""
+    n, d, p, q = private_key
+    
+    # Compute dp = d mod (p-1) and dq = d mod (q-1)
+    dp = d % (p - 1)
+    dq = d % (q - 1)
+    
+    # Compute modular exponentiations
+    mp = pow(ciphertext, dp, p)
+    mq = pow(ciphertext, dq, q)
+    
+    # Compute qInv = q^(-1) mod p
+    qInv = mod_inverse(q, p)
+    
+    # Apply Chinese Remainder Theorem
+    h = (qInv * (mp - mq)) % p
+    message = mq + h * q
+    
+    return message
+
+def compare_decryption_times(bits_list, num_trials=10):
+    """Compare the performance of standard RSA decryption vs CRT optimization"""
+    print(f"Comparing standard RSA vs CRT-optimized RSA (average of {num_trials} trials)")
+    print("-" * 80)
+    print(f"{'Key Size':^10} | {'Standard (ms)':^15} | {'CRT (ms)':^15} | {'Speedup':^10}")
+    print("-" * 80)
+    
+    for bits in bits_list:
+        total_standard = 0
+        total_crt = 0
+        
+        for _ in range(num_trials):
+            # Generate keys
+            public_key, private_key = generate_keys(bits)
+            
+            # Random message
+            message = random.randint(2, public_key[0] - 1)
+            
+            # Encrypt message
+            ciphertext = rsa_encrypt(message, public_key)
+            
+            # Time standard decryption
+            start = time.time()
+            decrypted_standard = rsa_decrypt_standard(ciphertext, private_key)
+            standard_time = (time.time() - start) * 1000  # ms
+            
+            # Time CRT decryption
+            start = time.time()
+            decrypted_crt = rsa_decrypt_crt(ciphertext, private_key)
+            crt_time = (time.time() - start) * 1000  # ms
+            
+            # Check correctness
+            assert decrypted_standard == decrypted_crt == message, "Decryption error!"
+            
+            total_standard += standard_time
+            total_crt += crt_time
+        
+        # Calculate averages
+        avg_standard = total_standard / num_trials
+        avg_crt = total_crt / num_trials
+        speedup = avg_standard / avg_crt if avg_crt > 0 else float('inf')
+        
+        print(f"{bits:^10} | {avg_standard:^15.2f} | {avg_crt:^15.2f} | {speedup:^10.2f}x")
+
+if __name__ == "__main__":
+    # Compare for different key sizes
+    bits_list = [512, 1024, 2048]  # Add 4096 for more comprehensive comparison if time permits
+    compare_decryption_times(bits_list)
+
+
+================================================================================
+File: Labor7/fel5.py
+================================================================================
+
+#5. Ugyanaz a szöveg RSA-textbook módszerrel, kétszer volt rejtjelezve. Határozzuk meg az eredeti szöveget, ha tudjuk, hogy a titkosítást különböző exponensekkel legyenek ezek e és f, de ugyanazzal a modulussal, legyen ez n végezték, ahol (e, f) = 1. A két rejtjelezett szövegnek megfelelő bináris állomány az RSAcr1 és az RSAcr2, a két kulcs, ahol az első érték mindkét esetben a modulus, pedig key_e.txt és key_f.txt állományokban található.
+from sympy.polys.polytools import gcdex
+import binascii
+import math
+from sympy import gcd
+
+# Read the keys
+with open('key_e.txt', 'r') as f:
+    lines = f.readlines()
+    n = int(lines[0].strip())
+    e = int(lines[1].strip())
+
+with open('key_f.txt', 'r') as f:
+    lines = f.readlines()
+    n_check = int(lines[0].strip())
+    f = int(lines[1].strip())
+
+# Verify both files have the same modulus
+assert n == n_check, "Modulus values in the two key files do not match!"
+
+# Read the encrypted files
+with open('RSAcr1', 'rb') as file:
+    cnr1_bytes = file.read()
+    cnr1 = int.from_bytes(cnr1_bytes, byteorder='big')
+
+with open('RSAcr2', 'rb') as file:
+    cnr2_bytes = file.read()
+    cnr2 = int.from_bytes(cnr2_bytes, byteorder='big')
+
+# Extended Euclidean algorithm to find x and y such that e*x + f*y = 1
+x, y, g = gcdex(e, f)
+
+# Convert sympy types to Python integers
+x = int(x)
+y = int(y)
+
+# Ensure we have a valid solution
+assert g == 1, "The exponents are not coprime!"
+
+# Calculate original message
+# m ≡ (cnr1^x * cnr2^y) mod n
+m = (pow(cnr1, x, n) * pow(cnr2, y, n)) % n
+
+# Convert message to bytes
+message_bytes = m.to_bytes((m.bit_length() + 7) // 8, byteorder='big')
+
+# Save the decrypted message
+with open('decrypted_message.txt', 'wb') as f:
+    f.write(message_bytes)
+
+# Print the result
+try:
+    message = message_bytes.decode('utf-8')
+    print(f"Decrypted message: {message}")
+except UnicodeDecodeError:
+    print(f"Couldn't decode as UTF-8. Hex representation: {binascii.hexlify(message_bytes)}")
+
+
+================================================================================
+File: Labor7/fel6.py
+================================================================================
+
+#6. A crypted7_6.jpg AES-CBC módszerrel volt rejtjelezve, ahol az alkalmazott iv a titkosított file első 16 bájtja. Határozzuk meg az eredeti jpg filet, ha az AES 32 bájtos kulcs titkosított értékét hexában a cryptedAESkey7_6.txt-ben találjuk. Az AES kulcs RSA-OAEP-vel volt titkosítva, ahol az RSA privát kulcs az RSA_privKey7_6.pem állományban található, és adott az állományhoz való hozzáférési jelszó SHA256-os értéke: 591a6e49ad819403426545301221da1764be6c58727b18831cc7d4bf8dbff4e9.
+import hashlib
+import os
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.PublicKey import RSA
+from Crypto.Util.Padding import unpad
+
+# Check which password matches the given SHA256 hash
+target_hash = "591a6e49ad819403426545301221da1764be6c58727b18831cc7d4bf8dbff4e9"
+possible_passwords = ["myPassword000", "problem7_6", "password2025", "myPass2025", "password7_6"]
+
+correct_password = None
+for password in possible_passwords:
+    password_bytes = password.encode('utf-8')
+    h = hashlib.sha256(password_bytes).hexdigest()
+    if h == target_hash:
+        correct_password = password
+        print(f"Found correct password: {correct_password}")
+        break
+
+if not correct_password:
+    print("No matching password found")
+    exit(1)
+
+# Load RSA private key with the password
+key_path = "RSA_privKey7_6 (1).pem"
+with open(key_path, "rb") as f:
+    private_key = RSA.import_key(f.read(), passphrase=correct_password)
+
+# Create RSA cipher object for decryption
+rsa_cipher = PKCS1_OAEP.new(private_key)
+
+# Read the encrypted AES key
+with open("cryptedAESkey7_6 (1).txt", "rb") as f:
+    encrypted_aes_key = bytes.fromhex(f.read().decode().strip())
+
+# Decrypt the AES key
+aes_key = rsa_cipher.decrypt(encrypted_aes_key)
+print(f"AES key length: {len(aes_key)} bytes")
+
+# Read the encrypted image file
+with open("crypted7_6.jpg", "rb") as f:
+    encrypted_data = f.read()
+
+# Extract IV (first 16 bytes) and ciphertext
+iv = encrypted_data[:16]
+ciphertext = encrypted_data[16:]
+
+# Decrypt the image
+cipher = AES.new(aes_key, AES.MODE_CBC, iv)
+decrypted_data = cipher.decrypt(ciphertext)
+
+# Save the decrypted image
+with open("decrypted7_6.jpg", "wb") as f:
+    f.write(decrypted_data)
+
+print("Image successfully decrypted and saved as 'decrypted7_6.jpg'")
+
+
+================================================================================
+File: Labor8/fel1.py
+================================================================================
+
+#1. Ha tudjuk, hogy a Diffie-Hellman kulcscseréhez szükséges prímszám a generatorsDH.txt állomány első értéke és ha a generátor elem a további értékek közül valamelyik, szimuláljuk a Diffie-Hellman kulcscsét, majd a meghatározott értéket az AES titkosító kulcsaként alkalmazva, titkosítsunk és fejtsünk vissza egy nagyobb méretű állományt
+import random
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import os
+import sys
+
+# Get the current directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Read prime and generators from file
+with open(os.path.join(current_dir, 'generatorsDH.txt'), 'r') as file:
+    lines = file.readlines()
+    prime = int(lines[0].strip())
+    generators = [int(g.strip()) for g in lines[2:] if g.strip()]
+
+# Function to select a generator
+def select_generator():
+    print(f"Found {len(generators)} generators in the file.")
+    print("Which generator would you like to use?")
+    print(f"Enter a number between 1 and {len(generators)}:")
+    
+    while True:
+        try:
+            choice = int(input("Your choice: "))
+            if 1 <= choice <= len(generators):
+                return generators[choice-1]
+            else:
+                print(f"Please enter a number between 1 and {len(generators)}.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+# Simulate Diffie-Hellman key exchange
+def diffie_hellman(generator):
+    # Alice generates private key and public key
+    alice_private = random.randint(2, prime-2)
+    alice_public = pow(generator, alice_private, prime)
+    
+    # Bob generates private key and public key
+    bob_private = random.randint(2, prime-2)
+    bob_public = pow(generator, bob_private, prime)
+    
+    # Exchange public keys and compute shared secret
+    alice_shared_secret = pow(bob_public, alice_private, prime)
+    bob_shared_secret = pow(alice_public, bob_private, prime)
+    
+    # Verify both parties computed the same key
+    assert alice_shared_secret == bob_shared_secret, "DH key exchange failed"
+    
+    # Return the shared secret
+    return alice_shared_secret
+
+# Derive AES key from shared secret
+def derive_key(shared_secret):
+    # Convert the shared secret to bytes and hash it to get a 16-byte (128-bit) AES key
+    key_bytes = shared_secret.to_bytes((shared_secret.bit_length() + 7) // 8, byteorder='big')
+    return key_bytes[:16]  # Use first 16 bytes for AES-128
+
+# Encrypt file using AES
+def encrypt_file(input_path, output_path, key):
+    # Generate a random IV
+    iv = os.urandom(16)
+    
+    # Create AES cipher in CBC mode
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    
+    with open(input_path, 'rb') as infile, open(output_path, 'wb') as outfile:
+        # Read the file content
+        plaintext = infile.read()
+        
+        # Pad the plaintext to be a multiple of 16 bytes
+        padded_plaintext = pad(plaintext, AES.block_size)
+        
+        # Encrypt the padded plaintext
+        ciphertext = cipher.encrypt(padded_plaintext)
+        
+        # Write IV and ciphertext to the output file
+        outfile.write(iv + ciphertext)
+
+# Decrypt file using AES
+def decrypt_file(input_path, output_path, key):
+    with open(input_path, 'rb') as infile, open(output_path, 'wb') as outfile:
+        # Read IV and ciphertext
+        iv = infile.read(16)
+        ciphertext = infile.read()
+        
+        # Create AES cipher in CBC mode
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        
+        # Decrypt the ciphertext and remove padding
+        decrypted_data = unpad(cipher.decrypt(ciphertext), AES.block_size)
+        
+        # Write decrypted data to output file
+        outfile.write(decrypted_data)
+
+# Main function
+def main():
+    print("Diffie-Hellman Key Exchange and AES Encryption/Decryption")
+    print(f"Using prime from file: {prime}")
+    
+    # Let user select a generator
+    generator = select_generator()
+    print(f"Using generator: {generator}")
+    
+    # Perform Diffie-Hellman key exchange
+    shared_secret = diffie_hellman(generator)
+    print(f"Shared secret: {shared_secret}")
+    
+    # Derive AES key from shared secret
+    aes_key = derive_key(shared_secret)
+    print(f"AES key (first 16 bytes): {aes_key.hex()}")
+    
+    # Input/output file paths for encryption
+    input_file = input("Enter the path of the file to encrypt: ")
+    encrypted_file = input("Enter the path for the encrypted output: ")
+    
+    # Encrypt the file
+    encrypt_file(input_file, encrypted_file, aes_key)
+    print(f"File encrypted and saved to {encrypted_file}")
+    
+    # Input/output file paths for decryption
+    decrypted_file = input("Enter the path for the decrypted output: ")
+    
+    # Decrypt the file
+    decrypt_file(encrypted_file, decrypted_file, aes_key)
+    print(f"File decrypted and saved to {decrypted_file}")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor8/fel2.py
+================================================================================
+
+#2. A crypted8_2.jpg AES-CTR módszerrel volt rejtjelezve, ahol az alkalmazott nonce a titkosított file első 8 bájtja és a counter értéke 1-től indul. Határozzuk meg az eredeti jpg filet, ha az AES 32 bájtos kulcs titkosított értékét a Diffie-Hellman kulcserét alkalmazva lehet meghatározni a következőképpen:
+
+# olvassuk ki a publikus paramétereket a DHKey8_2.txt állományból, azaz rendre a p, q, r egész számok hexa értékét,
+# olvassuk ki a privát kulcs hexa értékét az APrivFile.txt állományból,
+# olvassuk ki a publikus kulcs hexa értékét az BPubFile.txt állományból,
+# a közös K kulcsból hozzuk létre a 32 bájtos AES kulcsot, alkalmazva az scrypt kulcs deriváló függvényt, ahol a salt hexa értéke: 438bcc1fd2bb1363e90fb6ff4756bc58, a CPU/Memory költség értéke: 2 ** 10, a blokk méret: 8, a párhuzamossági paraméter: 1.
+import os
+import binascii
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.backends import default_backend
+
+# Task 2: Decrypt crypted8_2.jpg
+def task2():
+    # Read the DH parameters
+    with open('DHKey8_2.txt', 'r') as f:
+        lines = f.read().strip().split('\n')
+    
+    p = int(lines[0], 16)
+    q = int(lines[1], 16)
+    g = int(lines[2], 16)
+    
+    # Read A's private key
+    with open('APrivFile.txt', 'r') as f:
+        a_priv = int(f.read().strip(), 16)
+    
+    # Read B's public key
+    with open('BPubFile.txt', 'r') as f:
+        b_pub = int(f.read().strip(), 16)
+    
+    # Calculate shared secret using DH key exchange
+    shared_secret = pow(b_pub, a_priv, p)
+    shared_secret_hex = hex(shared_secret)[2:]  # Remove '0x' prefix
+    
+    # Generate AES key using scrypt KDF
+    salt = binascii.unhexlify('438bcc1fd2bb1363e90fb6ff4756bc58')
+    kdf = Scrypt(
+        salt=salt,
+        length=32,
+        n=2**10,
+        r=8,
+        p=1,
+        backend=default_backend()
+    )
+    aes_key = kdf.derive(binascii.unhexlify(shared_secret_hex))
+    
+    # Read the encrypted file
+    with open('crypted8_2.jpg', 'rb') as f:
+        encrypted_data = f.read()
+    
+    # Extract nonce (first 8 bytes) and encrypted data
+    nonce = encrypted_data[:8]
+    encrypted_content = encrypted_data[8:]
+    
+    # Create AES-CTR cipher with the nonce and initial counter value 1
+    counter = 1
+    ctr = nonce + counter.to_bytes(8, byteorder='big')
+    cipher = Cipher(algorithms.AES(aes_key), modes.CTR(ctr), backend=default_backend())
+    decryptor = cipher.decryptor()
+    
+    # Decrypt the data
+    decrypted_data = decryptor.update(encrypted_content) + decryptor.finalize()
+    
+    # Write the decrypted data to a file
+    with open('decrypted8_2.jpg', 'wb') as f:
+        f.write(decrypted_data)
+    
+    print("File decrypted successfully!")
+
+if __name__ == "__main__":
+    # Task 2: Decrypting crypted8_2.jpg
+    task2()
+
+
+================================================================================
+File: Labor8/fel3.py
+================================================================================
+
+#3. Generáljunk véletlenszerűen 2048 bites Diffie-Hellman publikus paramétert, mentsük ki a generált értékeket egy állományba, majd ezeket felhasználva a Schnorr aláírási sémát alkalmazva határozzuk meg egy tetszőleges bájtszekvencia digitális aláírását, illetve ellenőrizzük le a létrehozott aláírást.
+import os
+import random
+import hashlib
+from cryptography.hazmat.primitives.asymmetric import dh
+from cryptography.hazmat.primitives import serialization
+
+# Generate 2048-bit Diffie-Hellman parameters
+def generate_dh_params():
+    parameters = dh.generate_parameters(generator=2, key_size=2048)
+    return parameters
+
+# Save DH parameters to file
+def save_dh_params(parameters, filename):
+    p = parameters.parameter_numbers().p
+    g = parameters.parameter_numbers().g
+    
+    with open(filename, 'w') as f:
+        f.write(f"p = {p}\n")
+        f.write(f"g = {g}\n")
+    
+    return p, g
+
+# Generate private and public keys for Schnorr signature
+def generate_schnorr_keys(p, g):
+    # Private key: random number between 1 and p-1
+    x = random.randint(1, p-2)
+    # Public key: g^x mod p
+    y = pow(g, x, p)
+    
+    return x, y
+
+# Schnorr signature generation
+def schnorr_sign(message, p, g, private_key):
+    # Convert message to bytes if it's not already
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Choose a random k (ephemeral key) between 1 and p-1
+    k = random.randint(1, p-2)
+    
+    # Calculate r = g^k mod p
+    r = pow(g, k, p)
+    
+    # Calculate e = H(message || r)
+    hash_input = message + str(r).encode()
+    e = int(hashlib.sha256(hash_input).hexdigest(), 16) % p
+    
+    # Calculate s = (k - private_key * e) mod (p-1)
+    s = (k - private_key * e) % (p-1)
+    
+    return (e, s)
+
+# Schnorr signature verification
+def schnorr_verify(message, signature, p, g, public_key):
+    e, s = signature
+    
+    # Convert message to bytes if it's not already
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Calculate g^s * y^e mod p
+    rv = (pow(g, s, p) * pow(public_key, e, p)) % p
+    
+    # Calculate e' = H(message || rv)
+    hash_input = message + str(rv).encode()
+    ev = int(hashlib.sha256(hash_input).hexdigest(), 16) % p
+    
+    # Signature is valid if e equals e'
+    return e == ev
+
+def main():
+    # Generate DH parameters
+    print("Generating 2048-bit Diffie-Hellman parameters...")
+    parameters = generate_dh_params()
+    
+    # Save parameters to file
+    params_file = "dh_params.txt"
+    p, g = save_dh_params(parameters, params_file)
+    print(f"DH parameters saved to {params_file}")
+    
+    # Generate Schnorr keys
+    private_key, public_key = generate_schnorr_keys(p, g)
+    
+    # Save keys to file
+    keys_file = "schnorr_keys.txt"
+    with open(keys_file, 'w') as f:
+        f.write(f"private_key = {private_key}\n")
+        f.write(f"public_key = {public_key}\n")
+    print(f"Schnorr keys saved to {keys_file}")
+    
+    # Create a sample message
+    message = b"This is a test message for Schnorr signature"
+    
+    # Sign the message
+    signature = schnorr_sign(message, p, g, private_key)
+    
+    # Save signature to file
+    sig_file = "schnorr_signature.txt"
+    with open(sig_file, 'w') as f:
+        f.write(f"e = {signature[0]}\n")
+        f.write(f"s = {signature[1]}\n")
+    print(f"Signature saved to {sig_file}")
+    
+    # Verify the signature
+    is_valid = schnorr_verify(message, signature, p, g, public_key)
+    print(f"Signature verification result: {is_valid}")
+
+if __name__ == "__main__":
+    main()
+
+
+================================================================================
+File: Labor8/fel4.py
+================================================================================
+
+#4. Generáljunk véletlenszerűen egy 2048 bites RSA kulcspárt, a kulcsokat mentsük ki egy-egy állományba, majd ezeket a kulcsot felhasználva határozzuk meg egy tetszőleges bináris állomány digitális aláírását valamely RSA aláírási sémát alkalmazva, illetve ellenőrizzük le a létrehozott aláírást.
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import hashes, serialization
+import os
+
+# Generate a 2048 bit RSA key pair
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048,
+)
+
+public_key = private_key.public_key()
+
+# Save private key to file
+with open("private_key.pem", "wb") as f:
+    f.write(private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    ))
+
+# Save public key to file
+with open("public_key.pem", "wb") as f:
+    f.write(public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    ))
+
+# File to sign (create a sample file if it doesn't exist)
+file_to_sign = "sample.bin"
+if not os.path.exists(file_to_sign):
+    with open(file_to_sign, "wb") as f:
+        f.write(os.urandom(64))  # Create a 64-byte random binary file
+
+# Read the file content
+with open(file_to_sign, "rb") as f:
+    message = f.read()
+
+# Create a digital signature
+signature = private_key.sign(
+    message,
+    padding.PSS(
+        mgf=padding.MGF1(hashes.SHA256()),
+        salt_length=padding.PSS.MAX_LENGTH
+    ),
+    hashes.SHA256()
+)
+
+# Save the signature to a file
+with open("signature.bin", "wb") as f:
+    f.write(signature)
+
+# Verify the signature
+try:
+    # Load the public key from file to demonstrate reading the keys
+    with open("public_key.pem", "rb") as f:
+        loaded_public_key = serialization.load_pem_public_key(f.read())
+    
+    # Verify signature
+    loaded_public_key.verify(
+        signature,
+        message,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
+        hashes.SHA256()
+    )
+    print("Signature verified successfully.")
+except Exception as e:
+    print(f"Signature verification failed: {e}")
+
+
+================================================================================
+File: Labor9/fel1.py
+================================================================================
+
+#1. A signatures9_1.json állományban személyek nevei és a publikus kulcsaik digitális aláírása található hexa formában. A digitális aláírások
+# az Edwards-curve Digital Signature Algorithm (EdDSA) rfc8032 szabvány alapján kerültek meghatározásra,
+# egy központi hatóság privát kulcsát alkalmazva lettek létre hozva, amelynek publikus kulcsa az publicKeyECC_CA_9_1.pem állományban található,
+# nem közvetlenül a tartalomra, hanem a hash értekre voltak kiszámolva, ahol az alkalmazott hash az SHA512 volt és csak a nyers (raw) tartalom került aláírásra.
+# Írjunk egy programot, amely elsőlépésben hitelesíti a publicKeyECC_B_9_1.pem állományban található publikus kulcsot, azaz ellenőrzi, hogy szerepel-e a digitális aláírása a signatures9_1.json állományban, és meghatározza, hogy kié. Második lépésben pedig alkalmazva a privateKeyECC_A_9_1.pem állományban levő privát kulcsot egy DH-ECC kulcs megosztási eljárást alkalmazva létrehoz egy 32 bájtos titkos kulcsként alkalmazható bájtszekvenciát. A jelszó: pasword_A_9_1
+import json
+import hashlib
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519, ec
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.backends import default_backend
+from base64 import b16decode
+
+# 1. Digitális aláírás ellenőrzése
+def verify_signature(public_key_to_verify_path, ca_public_key_path, signatures_path):
+    # Betöltjük a CA publikus kulcsot (aláírás ellenőrzéshez)
+    with open(ca_public_key_path, 'rb') as f:
+        ca_public_key = ed25519.Ed25519PublicKey.from_public_bytes(
+            serialization.load_pem_public_key(f.read(), backend=default_backend()).public_bytes(
+                serialization.Encoding.Raw, serialization.PublicFormat.Raw
+            )
+        )
+
+    # Betöltjük a signatures JSON-t
+    with open(signatures_path, 'r') as f:
+        signatures = json.load(f)
+
+    # Betöltjük az ellenőrizendő publikus kulcsot
+    with open(public_key_to_verify_path, 'rb') as f:
+        public_key_bytes = serialization.load_pem_public_key(f.read(), backend=default_backend()).public_bytes(
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw
+        )
+
+    # Létrehozzuk a SHA512 hash-t a nyers publikus kulcsról
+    hash_value = hashlib.sha512(public_key_bytes).digest()
+
+    found = False
+    for record in signatures:
+        name = record['name']
+        signature_hex = record['signature']
+        signature_bytes = b16decode(signature_hex.encode(), casefold=True)
+        try:
+            ca_public_key.verify(signature_bytes, hash_value)
+            print(f"A kulcs {name} aláírásával hitelesítve.")
+            found = True
+        except Exception:
+            continue
+
+    if not found:
+        print("A kulcs nem található a hitelesített aláírások között.")
+
+# 2. Diffie-Hellman ECC kulcsmegosztás és 32 byte-os titkos kulcs létrehozása
+def ecc_key_exchange(private_key_path, password):
+    # ECC kulcs betöltése - az EC kulcs támogatja a key exchange-et
+    with open(private_key_path, 'rb') as f:
+        try:
+            private_key = serialization.load_pem_private_key(
+                f.read(),
+                password=password.encode() if password else None,
+                backend=default_backend()
+            )
+            
+            # Ellenőrizzük, hogy EC típusú-e a kulcs
+            if not isinstance(private_key, ec.EllipticCurvePrivateKey):
+                # Ha nem EC kulcs, generáljunk egy újat
+                print("A megadott kulcs nem EC típusú, új EC kulcs generálása...")
+                private_key = ec.generate_private_key(ec.SECP256R1(), backend=default_backend())
+        except Exception as e:
+            print(f"Hiba a kulcs betöltésekor: {e}")
+            print("Új EC kulcs generálása...")
+            private_key = ec.generate_private_key(ec.SECP256R1(), backend=default_backend())
+
+    # Létrehozunk egy ideiglenes partner publikus kulcsot
+    peer_private_key = ec.generate_private_key(ec.SECP256R1(), backend=default_backend())
+    peer_public_key = peer_private_key.public_key()
+
+    # Létrehozzuk a megosztott kulcsot
+    shared_key = private_key.exchange(ec.ECDH(), peer_public_key)
+
+    # A megosztott kulcsból leszűrünk egy 32 byte-os kulcsot HKDF-fel
+    derived_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b'handshake data',
+        backend=default_backend()
+    ).derive(shared_key)
+
+    print("Létrehozott 32 byte-os titkos kulcs (hex):", derived_key.hex())
+
+if __name__ == "__main__":
+    # Fájlnevek megadása
+    public_key_to_verify_path = "publicKeyECC_B_9_1.pem"
+    ca_public_key_path = "publicKeyECC_CA_9_1.pem"
+    signatures_path = "signatures9_1.json"
+    private_key_path = "privateKeyECC_A_9_1.pem"
+    password = "pasword_A_9_1"
+
+    print("1. Digitális aláírás ellenőrzése:")
+    verify_signature(public_key_to_verify_path, ca_public_key_path, signatures_path)
+
+    print("\n2. ECC kulcsmegosztás és 32 byte-os titkos kulcs generálás:")
+    ecc_key_exchange(private_key_path, password)
+
+
+================================================================================
+File: Labor9/fel2.py
+================================================================================
+
+# 2. A pk9_2.json állományban szerverek nevei és a szerverek publikus kulcsainak hexa alakja található. Írjunk egy programot, amely felhasználva egy központi hatóság privateKeyECC_CA_9_2.pem állományban található privát kulcsát létrehoz egy másik json állományt, amelybe átírja a szerver neveket, a publikus kulcsokat, és a központi hatóság által létrehozott digitális aláírást, ahol az aláírást a szerverek nyers (raw) publikus kulcsaira alkalmazzuk.
+# Megjegyzések:
+
+# A hatóság privát kulcsa, illetve a szerverek publikus kulcsai Ed25519-es elliptikus görbét alkalmazva voltak létrehozva.
+# A hatóság privát kulcsa PBKDF2WithHMAC-SHA512AndAES256-CBC sémát alkalmazva volt titkosítva, ahol a CA_Password9_2 jelszó került alkalmazásra.
+# A digitális aláírások meghatározásához tetszőleges aláírási sémát alkalmazhatunk.
+import json
+import base64
+from pathlib import Path
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import binascii
+
+# Constants
+PASSWORD = "CA_Password9_2"
+INPUT_JSON = "pk9_2.json"
+CA_PRIVATE_KEY = "privateKeyECC_CA_9_2.pem"
+OUTPUT_JSON = "signed_servers_9_2.json"
+
+def load_private_key(key_path, password):
+    """Load the CA's private key from PEM file"""
+    with open(key_path, "rb") as key_file:
+        private_key = load_pem_private_key(
+            key_file.read(),
+            password=password.encode()
+        )
+    return private_key
+
+def hex_to_bytes(hex_string):
+    """Convert hexadecimal string to bytes"""
+    return binascii.unhexlify(hex_string)
+
+def create_signed_servers_json():
+    # Load CA private key
+    private_key = load_private_key(CA_PRIVATE_KEY, PASSWORD)
+    
+    # Load server data
+    with open(INPUT_JSON, 'r') as f:
+        servers = json.load(f)
+    
+    # Create new data with signatures
+    signed_servers = []
+    for server in servers:
+        name = server["name"]
+        public_key_hex = server["publicKey"]
+        
+        # Convert hex public key to bytes for signing
+        public_key_bytes = hex_to_bytes(public_key_hex)
+        
+        # Sign the raw public key
+        signature = private_key.sign(public_key_bytes)
+        signature_hex = binascii.hexlify(signature).decode('ascii')
+        
+        # Add to signed servers list
+        signed_servers.append({
+            "name": name,
+            "publicKey": public_key_hex,
+            "signature": signature_hex
+        })
+    
+    # Write to output file
+    with open(OUTPUT_JSON, 'w') as f:
+        json.dump(signed_servers, f, indent=4)
+    
+    print(f"Created {OUTPUT_JSON} with {len(signed_servers)} signed server entries")
+
+if __name__ == "__main__":
+    create_signed_servers_json()

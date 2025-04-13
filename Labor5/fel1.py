@@ -1,3 +1,4 @@
+#1. A crypt.bmp állomány TEA-ECB módban volt titkosítva, úgy hogy az állomány első 80 bájtját nem titkosítottuk, és a kulcs értéke: 0x0123, 0x4567, 0x89ab, 0xcdef. Fejtsük vissza, majd az eredeti állományt titkosítsuk CBC módban
 import struct
 import os
 

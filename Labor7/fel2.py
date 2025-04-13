@@ -1,3 +1,11 @@
+# 2. A crypted7_2.png AES-GCM módszerrel volt rejtjelezve. Határozzuk meg az eredeti png filet, ha az AES 32 bájtos kulcs titkosított értékét hexában cryptedAESkey7_2.txt-ben találjuk. Az AES kulcs RSA-OAEP-vel volt titkosítva, ahol az RSA publikus kulcs az RSA_pubKey7_2.pem állományban található.
+# Megjegyzések:
+
+# a további hitelesített bájtszekvencia, a header:
+# AES_GCMEncryption 2025.04.01,
+# a nonce értéke a titkosított állomány első 12 bájtja,
+# a hitelesítő tag pedig a titkosított állomány utolsó 16 bájtja.
+# Útmutatás: faktorizáljuk az RSA publikus kulcs modulusát Fermat módszerével.
 import math
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP, AES
